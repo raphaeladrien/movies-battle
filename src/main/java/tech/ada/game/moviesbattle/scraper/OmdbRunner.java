@@ -5,10 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import tech.ada.game.moviesbattle.entity.Movie;
+import tech.ada.game.moviesbattle.repository.MovieRepository;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 
 @Component
 public class OmdbRunner implements CommandLineRunner {
@@ -18,35 +21,48 @@ public class OmdbRunner implements CommandLineRunner {
     private final OmdbScraper omdbScraper;
     private final Integer numberOfMovies;
     private final List<String> imdbIds = new ArrayList<>();
+    private final MovieRepository movieRepository;
 
     public OmdbRunner(
         OmdbScraper omdbScraper,
+        MovieRepository movieRepository,
         @Value("${omdb.qtd.movies}") Integer numberOfMovies,
         @Value("${omdb.imdb.top.movies}") List<String> imdbIds
     ) {
         this.omdbScraper = omdbScraper;
+        this.movieRepository = movieRepository;
         this.numberOfMovies = numberOfMovies;
         this.imdbIds.addAll(imdbIds);
     }
 
     @Override
     public void run(String... args) throws Exception {
-        final boolean isValidValue = numberOfMovies < 1;
+        final boolean invalidMovieNumber = numberOfMovies < 1;
 
-        if (isValidValue)
-            return;
+        if (invalidMovieNumber) {
+            throw new InvalidMovieNumberException("Invalid value for movie number env var, please take a look");
+        }
 
-        final AtomicInteger moviesCreated = new AtomicInteger(0);
+        final Set<Movie> movies = new HashSet<>();
         for (final String imdbId : imdbIds) {
-            final boolean result = omdbScraper.run(imdbId).get();
+            final Movie movie = omdbScraper.run(imdbId).get();
 
-            if (result) moviesCreated.incrementAndGet();
+            if (movie != null) movies.add(movie);
 
-            if (moviesCreated.get() == numberOfMovies) {
+            if (movies.size() == numberOfMovies) {
                 if (logger.isDebugEnabled())
-                    logger.debug("{} were retrieved from OMDB API", moviesCreated.get());
+                    logger.debug("{} were retrieved from OMDB API", movies.size());
                 break;
             }
+        }
+
+        if (!movies.isEmpty())
+            movieRepository.saveAll(movies);
+    }
+
+    public static class InvalidMovieNumberException extends RuntimeException {
+        public InvalidMovieNumberException(String message) {
+            super(message);
         }
     }
 }

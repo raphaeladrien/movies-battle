@@ -1,55 +1,84 @@
 package tech.ada.game.moviesbattle.scraper;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static tech.ada.game.moviesbattle.scraper.OmdbRunner.InvalidMovieNumberException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import tech.ada.game.moviesbattle.entity.Movie;
+import tech.ada.game.moviesbattle.repository.MovieRepository;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 class OmdbRunnerTest {
 
     private final OmdbScraper omdbScraper = mock(OmdbScraper.class);
+    private final MovieRepository movieRepository = mock(MovieRepository.class);
     private final String imdbMovieOne = "tt0111161";
     private final String imdbMovieTwo = "tt0068646";
     private final List<String> imdbIds = Arrays.asList(imdbMovieOne, imdbMovieTwo);
 
     @Test
-    @DisplayName("when number of movies is bigger than zero, ensure that omdbScraper is called")
-    void when_number_of_movies_is_bigger_than_zero_omdbScrapper_must_be_called() throws Exception {
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, 1, imdbIds);
-        when(omdbScraper.run("tt0111161")).thenReturn(CompletableFuture.completedFuture(false));
-        when(omdbScraper.run("tt0068646")).thenReturn(CompletableFuture.completedFuture(true));
+    @DisplayName("when number of movies is equals to number of movies retrieved, persists movies in db")
+    void when_number_of_movies_is_equals_movies_retrieved_persists_db() throws Exception {
+        final Movie movie = buildMovie("tt0068646");
+        final Set<Movie> movies = new HashSet<>();
+        movies.add(movie);
+
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, 1, imdbIds);
+
+        when(omdbScraper.run("tt0111161")).thenReturn(CompletableFuture.completedFuture(null));
+        when(omdbScraper.run("tt0068646")).thenReturn(
+            CompletableFuture.completedFuture(movie)
+        );
 
         subject.run();
 
         verify(omdbScraper, times(1)).run("tt0111161");
         verify(omdbScraper, times(1)).run("tt0068646");
+        verify(movieRepository, times(1)).saveAll(movies);
+
+        verifyNoMoreInteractions(omdbScraper, movieRepository);
     }
 
     @Test
-    @DisplayName("when number of movies is zero, does nothing")
-    void when_number_of_movies_is_zero_does_nothing() throws Exception {
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, 0, imdbIds);
-        when(omdbScraper.run(any())).thenReturn(CompletableFuture.completedFuture(true));
+    @DisplayName("when number of movies is zero, throws InvalidMovieNumberException")
+    void when_number_of_movies_is_zero_throws_exception() throws Exception {
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, 0, imdbIds);
 
-        subject.run();
-        verifyNoInteractions(omdbScraper);
+        assertThrows(InvalidMovieNumberException.class, subject::run);
+
+        verifyNoInteractions(omdbScraper, movieRepository);
     }
 
     @Test
-    @DisplayName("when number of movies is less than zero, does nothing")
-    void when_number_of_movies_less_than_zero_does_nothing() throws Exception {
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, -1, imdbIds);
-        when(omdbScraper.run(any())).thenReturn(CompletableFuture.completedFuture(true));
+    @DisplayName("when number of movies is less than zero, throws InvalidMovieNumberException")
+    void when_number_of_movies_less_than_zero_throws_exception() throws Exception {
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, -1, imdbIds);
 
-        subject.run();
-        verifyNoInteractions(omdbScraper);
+        assertThrows(InvalidMovieNumberException.class, subject::run);
+
+        verifyNoInteractions(omdbScraper, movieRepository);
+    }
+
+    private Movie buildMovie(final String imdbId) {
+        return new Movie(
+            "a-super-title",
+            2020,
+            "a-super-director",
+            "a-great-actor",
+            9.3f,
+            220000L,
+            imdbId
+        );
     }
 }

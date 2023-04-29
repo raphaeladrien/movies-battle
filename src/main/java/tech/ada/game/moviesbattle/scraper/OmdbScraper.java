@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tech.ada.game.moviesbattle.dto.MovieDTO;
+import tech.ada.game.moviesbattle.entity.Movie;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -36,7 +37,7 @@ public class OmdbScraper {
     }
 
     @Async
-    public CompletableFuture<Boolean> run(final String randomIMDBId) throws JsonProcessingException {
+    public CompletableFuture<Movie> run(final String randomIMDBId) throws JsonProcessingException {
         ResponseEntity<String> response = restTemplate.getForEntity(
             url + "/?apikey=" + apiKey + "&i=" + randomIMDBId + "&type=movie", String.class
         );
@@ -44,18 +45,30 @@ public class OmdbScraper {
         if (logger.isInfoEnabled())
             logger.info(response.getBody());
 
-        CompletableFuture<Boolean> completedFuture = validateResponse(response);
-        if (completedFuture != null) return completedFuture;
+        final boolean isValid = isResponseSuccessful(response);
+        if (!isValid) return CompletableFuture.completedFuture(null);
 
         final MovieDTO movieDTO = mapper.readValue(response.getBody(), MovieDTO.class);
-        return CompletableFuture.completedFuture(movieDTO.isValid());
+        if (!movieDTO.isValid()) return CompletableFuture.completedFuture(null);
+
+        final Movie movie = new Movie(
+            movieDTO.title(),
+            movieDTO.parsedYear(),
+            movieDTO.director(),
+            movieDTO.actors(),
+            movieDTO.parsedImdbRating(),
+            movieDTO.parsedImdbVotes(),
+            movieDTO.imdbId()
+        );
+
+        return CompletableFuture.completedFuture(movie);
     }
 
-    private CompletableFuture<Boolean> validateResponse(ResponseEntity<String> response) {
+    private Boolean isResponseSuccessful(ResponseEntity<String> response) {
         if (!response.getStatusCode().is2xxSuccessful()) {
             if (logger.isDebugEnabled())
                 logger.debug("An invalid status code was provided: {}", response.getStatusCode());
-            return CompletableFuture.completedFuture(false);
+            return false;
         }
 
         var body = response.getBody();
@@ -63,14 +76,15 @@ public class OmdbScraper {
         if (body == null || body.isBlank()) {
             if (logger.isDebugEnabled())
                 logger.debug("An empty body was received: {}", response.getStatusCode());
-            return CompletableFuture.completedFuture(false);
+            return false;
         }
 
         if (body.contains("Error getting data.")) {
             if (logger.isDebugEnabled())
                 logger.debug("Payload contains an unknown error: {}", body);
-            return CompletableFuture.completedFuture(false);
+            return false;
         }
-        return null;
+
+        return true;
     }
 }

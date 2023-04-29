@@ -6,5 +6,6 @@ create table Movies(
   actors VARCHAR(500),
   imdbRating FLOAT,
   imdbVotes LONG,
+  imdbId VARCHAR(15),
   PRIMARY KEY(id)
 )

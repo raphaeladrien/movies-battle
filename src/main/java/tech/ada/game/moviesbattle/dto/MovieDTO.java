@@ -33,4 +33,16 @@ public record MovieDTO(
         return NumberUtils.isCreatable(imdbVotes.replace(",", "")) &&
             NumberUtils.isCreatable(imdbRating);
     }
+
+    public Integer parsedYear() {
+        return Integer.parseInt(year);
+    }
+
+    public Float parsedImdbRating() {
+        return NumberUtils.createFloat(imdbRating);
+    }
+
+    public Long parsedImdbVotes() {
+        return NumberUtils.createLong(imdbVotes.replace(",", ""));
+    }
 }

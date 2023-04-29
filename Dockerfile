@@ -17,6 +17,7 @@ COPY ["gradlew", "build.gradle", "settings.gradle", "$APP_HOME/"]
 
 # Source code
 COPY src src
+COPY db db
 
 # Build project
 RUN bash gradlew clean build -x test
@@ -33,6 +34,7 @@ ENV APP_HOME /app
 # Workdir creation
 WORKDIR $APP_HOME
 COPY --from=build /app/build/libs/moviesbattle.jar .
+COPY --from=build /app/db ./db
 
 # Container entrypoint
 CMD [ "moviesbattle.jar" ]

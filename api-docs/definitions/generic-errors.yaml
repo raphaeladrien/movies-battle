@@ -1,0 +1,25 @@
+unauthorized-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0001"
+    message:
+      type: string
+      example: Unauthorized access. Please contact ada.tech support.
+
+internal-server-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0500"
+    message:
+      type: string
+      example: An internal server error occurred. Please contact ada.tech support.

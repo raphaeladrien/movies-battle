@@ -1,0 +1,23 @@
+post:
+  tags:
+    - Game
+  summary: The game will be started and the first two options will be presented to you
+  responses:
+    200:
+      description: 'First two options, choose one'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/movies-response'
+    401:
+      description: 'Unauthorized Access'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/unauthorized-error'
+    500:
+      description: 'Internal server error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/internal-server-error'

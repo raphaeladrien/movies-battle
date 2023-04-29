@@ -18,3 +18,13 @@ services:
       - "8080"
     ports:
       - "8080:8080"
+
+  doc:
+    build:
+      context: .
+      target: doc
+    container_name: moviesbattle-doc
+    expose:
+      - "3333"
+    ports:
+      - "3333:3333"

@@ -1,0 +1,82 @@
+movies-response:
+  type: object
+  required:
+    - movies
+    - _links
+  properties:
+    movies:
+      type: array
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/movie-detail-one'
+          - $ref: '#/components/schemas/movie-detail-two'
+    _links:
+      type: object
+      properties:
+        self:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/start'
+        choose:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/movie/:id/chosen'
+        finish:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/finish'
+        ranking:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/ranking'
+
+movie-detail-one:
+  type: object
+  properties:
+    id:
+      type: string
+      description: 'Unique and immutable movie identifier.'
+      format: uuid
+      example: c9ca860d-1328-462f-bfc8-d630b122281d
+    title:
+      type: string
+      description: 'Movie name'
+      example: 'Pulp Fiction'
+    year:
+      type: number
+      description: 'Year the movie was released'
+      example: 1994
+    directors:
+      type: string
+      description: 'movie directors'
+      example: 'Quentin Tarantino'
+
+
+movie-detail-two:
+  type: object
+  properties:
+    id:
+      type: string
+      description: 'Unique and immutable movie identifier.'
+      format: uuid
+      example: 220020f7-5f4a-46de-a14b-34f808c45750
+    title:
+      type: string
+      description: 'Movie name'
+      example: 'Gone with the Wind'
+    year:
+      type: number
+      description: 'Year the movie was released'
+      example: 1939
+    directors:
+      type: string
+      description: 'movie directors'
+      example: 'Victor Fleming'

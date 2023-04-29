@@ -1,0 +1,23 @@
+openapi: 3.0.1
+
+info:
+  title: Movies Battle API
+  description: Endpoints to fun
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:8080/movie-battle/
+
+tags:
+  - name: Game
+    description: APIs available to play the game
+
+paths:
+  /start:
+    $include: paths/post-start.yaml
+
+components:
+  schemas:
+    $include: definitions/generic-errors.yaml
+    $include: definitions/movies.yaml
+

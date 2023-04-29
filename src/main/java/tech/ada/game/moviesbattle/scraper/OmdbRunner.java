@@ -37,10 +37,10 @@ public class OmdbRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        final boolean invalidMovieNumber = numberOfMovies < 1;
+        final boolean invalidMovieNumber = numberOfMovies < 3;
 
         if (invalidMovieNumber) {
-            throw new InvalidMovieNumberException("Invalid value for movie number env var, please take a look");
+            throw new InvalidMovieNumberException("Invalid configuration exception, number of movies must be greater than 2");
         }
 
         final Set<Movie> movies = new HashSet<>();

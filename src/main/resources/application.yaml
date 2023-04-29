@@ -20,7 +20,7 @@ spring:
 omdb:
   apikey: 21e071d6
   qtd:
-    movies: '52'
+    movies: '1'
   url: https://www.omdbapi.com/
   imdb:
     top:

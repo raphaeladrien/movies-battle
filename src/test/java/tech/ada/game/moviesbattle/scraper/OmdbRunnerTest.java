@@ -25,26 +25,41 @@ class OmdbRunnerTest {
     private final MovieRepository movieRepository = mock(MovieRepository.class);
     private final String imdbMovieOne = "tt0111161";
     private final String imdbMovieTwo = "tt0068646";
-    private final List<String> imdbIds = Arrays.asList(imdbMovieOne, imdbMovieTwo);
+    private final String imdbMovieThree = "tt0012345";
+    private final String imdbMovieFour = "tt00207034";
+    private final List<String> imdbIds = Arrays.asList(imdbMovieOne, imdbMovieTwo, imdbMovieThree, imdbMovieFour);
 
     @Test
     @DisplayName("when number of movies is equals to number of movies retrieved, persists movies in db")
     void when_number_of_movies_is_equals_movies_retrieved_persists_db() throws Exception {
-        final Movie movie = buildMovie("tt0068646");
+        final Movie movieOne = buildMovie("tt0068646");
+        final Movie movieTwo = buildMovie("tt0012345");
+        final Movie movieThree = buildMovie("tt00207034");
         final Set<Movie> movies = new HashSet<>();
-        movies.add(movie);
+        movies.add(movieOne);
+        movies.add(movieTwo);
+        movies.add(movieThree);
 
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, 1, imdbIds);
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, 3, imdbIds);
 
         when(omdbScraper.run("tt0111161")).thenReturn(CompletableFuture.completedFuture(null));
         when(omdbScraper.run("tt0068646")).thenReturn(
-            CompletableFuture.completedFuture(movie)
+            CompletableFuture.completedFuture(movieOne)
+        );
+        when(omdbScraper.run("tt0012345")).thenReturn(
+            CompletableFuture.completedFuture(movieTwo)
+        );
+        when(omdbScraper.run("tt00207034")).thenReturn(
+            CompletableFuture.completedFuture(movieThree)
         );
 
         subject.run();
 
         verify(omdbScraper, times(1)).run("tt0111161");
         verify(omdbScraper, times(1)).run("tt0068646");
+        verify(omdbScraper, times(1)).run("tt0012345");
+        verify(omdbScraper, times(1)).run("tt00207034");
+
         verify(movieRepository, times(1)).saveAll(movies);
 
         verifyNoMoreInteractions(omdbScraper, movieRepository);

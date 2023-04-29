@@ -12,6 +12,7 @@ buildscript {
         commonsLangVersion = "3.12.0"
         h2Version = "2.1.214"
         flywayCoreVersion = "9.17.0"
+        jwtVersion = "0.9.1"
     }
 
     repositories {
@@ -51,6 +52,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
+
+    implementation("io.jsonwebtoken:jjwt:${jwtVersion}")
 
     implementation("org.apache.commons:commons-lang3:${commonsLangVersion}")
 

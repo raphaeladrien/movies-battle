@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tech.ada.game.moviesbattle.repository.MovieRepository;
+import tech.ada.game.moviesbattle.repository.UserRepository;
 import tech.ada.game.moviesbattle.scraper.OmdbRunner;
 import tech.ada.game.moviesbattle.scraper.OmdbScraper;
 
@@ -20,6 +21,9 @@ class MoviesbattleApplicationTests {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     @DisplayName("ensure that bean omdbScraper was instantiated")
@@ -38,4 +42,11 @@ class MoviesbattleApplicationTests {
     void ensure_that_bean_movieRepository_was_instantiated() {
         assertNotNull(movieRepository, "Bean omdbRunner wasn't instantiated");
     }
+
+    @Test
+    @DisplayName("ensure that bean userRepository was instantiated")
+    void ensure_that_bean_userRepository_was_instantiated() {
+        assertNotNull(movieRepository, "Bean userRepository wasn't instantiated");
+    }
+
 }

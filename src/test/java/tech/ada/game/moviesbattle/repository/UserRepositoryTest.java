@@ -1,11 +1,9 @@
 package tech.ada.game.moviesbattle.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import jakarta.transaction.Transactional;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,10 +24,10 @@ class UserRepositoryTest {
     private UserRepository subject;
     private final String username = "a-super-username";
     private final String password = "a-super-password";
+    private final User user = new User(username, password);
 
     @BeforeEach
     void setup() {
-        final User user = new User(username, password);
         subject.save(user);
     }
 
@@ -37,11 +35,9 @@ class UserRepositoryTest {
     @DisplayName("when a username is provided and exist in db, returns user")
     void when_username_provided_exist_db_returns_user() {
         final Optional<User> result = subject.findByUsername(username);
-        final User user = result.get();
+        final User userRetrieved = result.get();
 
-        assertNotNull(user, "User with username " + username + " must be found");
-        assertEquals(username, user.getUsername());
-        assertEquals(password, user.getPassword());
+        assertThat(user).usingRecursiveComparison().ignoringFields("id").isEqualTo(userRetrieved);
     }
 
     @Test

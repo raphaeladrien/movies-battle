@@ -15,10 +15,10 @@ spring:
     url: jdbc:h2:mem:movies
   h2:
     console:
-      enabled: 'true'
+      enabled: 'false'
 
 jwt:
-  secret: ada-super-secret
+  secret: 3F4428472B4B6250655368566D5971337436763979244226452948404D635166
   tokenExpirationInMs: 86400000
 
 omdb:

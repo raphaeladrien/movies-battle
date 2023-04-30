@@ -1,4 +1,4 @@
-create table Movies(
+create table if not exists Movies(
   id UUID default UUID(),
   title VARCHAR(255),
   release_year INT,

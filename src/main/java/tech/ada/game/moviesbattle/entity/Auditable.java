@@ -12,7 +12,7 @@ import java.util.Date;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class Auditable {
+public class Auditable {
 
     @Temporal(TIMESTAMP)
     @CreatedDate

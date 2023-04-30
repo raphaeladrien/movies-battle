@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
+import tech.ada.game.moviesbattle.context.UserContextHolder;
 import tech.ada.game.moviesbattle.repository.GameRepository;
 import tech.ada.game.moviesbattle.repository.MovieRepository;
 import tech.ada.game.moviesbattle.repository.UserRepository;
@@ -61,6 +62,9 @@ class MoviesbattleApplicationTests {
 
     @Autowired
     private Executor taskExecutor;
+
+    @Autowired
+    private UserContextHolder userContextHolder;
 
     @Test
     @DisplayName("ensure that bean omdbScraper was instantiated")
@@ -138,5 +142,11 @@ class MoviesbattleApplicationTests {
     @DisplayName("ensure that bean taskExecutor was instantiated")
     void ensure_that_bean_taskExecutor_was_instantiated() {
         assertNotNull(taskExecutor, "Bean taskExecutor wasn't instantiated");
+    }
+
+    @Test
+    @DisplayName("ensure that bean userContextHolder was instantiated")
+    void ensure_that_bean_userContextHolder_was_instantiated() {
+        assertNotNull(userContextHolder, "Bean userContextHolder wasn't instantiated");
     }
 }

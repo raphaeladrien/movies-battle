@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
+import tech.ada.game.moviesbattle.repository.GameRepository;
 import tech.ada.game.moviesbattle.repository.MovieRepository;
 import tech.ada.game.moviesbattle.repository.UserRepository;
 import tech.ada.game.moviesbattle.scraper.OmdbRunner;
@@ -33,6 +34,9 @@ class MoviesbattleApplicationTests {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -74,6 +78,12 @@ class MoviesbattleApplicationTests {
     @DisplayName("ensure that bean movieRepository was instantiated")
     void ensure_that_bean_movieRepository_was_instantiated() {
         assertNotNull(movieRepository, "Bean omdbRunner wasn't instantiated");
+    }
+
+    @Test
+    @DisplayName("ensure that bean gameRepository was instantiated")
+    void ensure_that_bean_gameRepository_was_instantiated() {
+        assertNotNull(gameRepository, "Bean gameRepository wasn't instantiated");
     }
 
     @Test

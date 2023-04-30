@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.context.annotation.RequestScope;
 import tech.ada.game.moviesbattle.repository.UserRepository;
 
 @Configuration
@@ -43,6 +44,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @RequestScope
     public SecurityContext securityContext() {
         return SecurityContextHolder.getContext();
     }

@@ -30,7 +30,7 @@ public class SecurityFilterConfig {
         httpSecurity
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/movies-battle/signin", "/movies-battle/register").permitAll()
+            .requestMatchers("/movies-battle/id/signing", "/movies-battle/id/register").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

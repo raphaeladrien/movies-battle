@@ -13,7 +13,7 @@ import static tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserReq
 import tech.ada.game.moviesbattle.interactor.RegisterUser;
 
 @RestController
-@RequestMapping("/movies-battle")
+@RequestMapping("/movies-battle/id")
 public class AuthenticationController {
 
     @Autowired
@@ -21,8 +21,8 @@ public class AuthenticationController {
     @Autowired
     private RegisterUser registerUser;
 
-    @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> signin(
+    @PostMapping("/signing")
+    public ResponseEntity<AuthenticationResponse> signing(
         @RequestBody final AuthenticationRequest authenticationRequest
     ) {
         return ResponseEntity.ok(authenticateUser.call(authenticationRequest));

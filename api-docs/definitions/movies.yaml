@@ -1,15 +1,14 @@
 movies-response:
   type: object
   required:
-    - movies
+    - id
     - _links
   properties:
-    movies:
-      type: array
-      items:
-        anyOf:
-          - $ref: '#/components/schemas/movie-detail-one'
-          - $ref: '#/components/schemas/movie-detail-two'
+    id:
+      type: string
+      description: 'Unique and immutable game identifier.'
+      format: uuid
+      example: 13e2ba02-e80c-11ed-a05b-0242ac120003
     _links:
       type: object
       properties:
@@ -19,12 +18,12 @@ movies-response:
             href:
               type: string
               example: 'http://localhost:8080/movie-battle/start'
-        choose:
+        round:
           type: object
           properties:
             href:
               type: string
-              example: 'http://localhost:8080/movie-battle/movie/:id/chosen'
+              example: 'http://localhost:8080/movie-battle/game/:id/round'
         finish:
           type: object
           properties:

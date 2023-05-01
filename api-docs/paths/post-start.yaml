@@ -3,8 +3,13 @@ post:
     - Game
   summary: The game will be started and the first two options will be presented to you
   responses:
-    200:
-      description: 'First two options, choose one'
+    201:
+      description: 'User created successfully'
+      headers:
+        Location:
+          description: 'The location of the first game round'
+          schema:
+            type: string
       content:
         application/json:
           schema:

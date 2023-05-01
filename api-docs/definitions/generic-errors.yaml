@@ -23,3 +23,29 @@ internal-server-error:
     message:
       type: string
       example: An internal server error occurred. Please contact ada.tech support.
+
+game-not-found-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0001"
+    message:
+      type: string
+      example: We couldn't find the game on our server. please start a new game
+
+max-number-attempts-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0002"
+    message:
+      type: string
+      example: Max number of attempts was achieved. please start a new game

@@ -15,6 +15,18 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/unauthorized-error'
+    404:
+      description: 'Game not found'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/game-not-found-error'
+    422:
+      description: 'Max number of attempts was achieved'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/game-not-found-error'
     500:
       description: 'Internal server error'
       content:

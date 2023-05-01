@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import tech.ada.game.moviesbattle.controller.GameController.BetRequest;
 import tech.ada.game.moviesbattle.interactor.BetMovie;
+import tech.ada.game.moviesbattle.interactor.FinishGame;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
 import tech.ada.game.moviesbattle.interactor.StartGame;
 import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
@@ -57,6 +58,9 @@ class GameControllerTest {
 
     @MockBean
     private BetMovie betMovie;
+
+    @MockBean
+    private FinishGame finishGame;
 
     private MockMvc mockMvc;
 
@@ -349,6 +353,68 @@ class GameControllerTest {
                     "Please contact ada.tech support.")));
 
             verify(betMovie, times(1)).call(gameId, movieId);
+        }
+    }
+
+    @Nested
+    @DisplayName("when endpoint /finish is called")
+    class WhenEndpointFinishIsCalled {
+
+        @Test
+        @DisplayName("the game is finished, returns HTTP 200")
+        void the_game_finished_returns_ok() throws Exception {
+            final UUID gameId = UUID.randomUUID();
+
+            when(finishGame.call()).thenReturn(new FinishGame.FinishResponse(gameId));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/finish");
+
+            mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameId", equalTo(gameId.toString())))
+                .andExpect(jsonPath("$._links.self.href",
+                    equalTo("http://localhost/movies-battle/game/finish"))
+                )
+                .andExpect(jsonPath("$._links.start.href",
+                    equalTo("http://localhost/movies-battle/game/start"))
+                )
+                .andExpect(jsonPath("$._links.ranking.href",
+                    equalTo("http://localhost/movies-battle/game/ranking"))
+                );
+
+            verify(finishGame, times(1)).call();
+        }
+
+        @Test
+        @DisplayName("the game is not found, returns HTTP 404")
+        void the_game_not_found_returns_not_found() throws Exception {
+            when(finishGame.call()).thenThrow(new GameNotFoundException("game not found"));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/finish");
+
+            mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", equalTo("MB0001")))
+                .andExpect(jsonPath("$.message", equalTo("We couldn't find the game on our server. " +
+                    "please start a new game")));
+
+            verify(finishGame, times(1)).call();
+        }
+
+        @Test
+        @DisplayName("and an unexpected error occurred, returns HTTP 500")
+        void and_unexpected_error_occurred_returns_internal_error() throws Exception {
+            when(finishGame.call()).thenThrow(new RuntimeException("an error"));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/finish");
+
+            mockMvc.perform(request)
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code", equalTo("MB0500")))
+                .andExpect(jsonPath("$.message", equalTo("An internal server error occurred. " +
+                    "Please contact ada.tech support.")));
+
+            verify(finishGame, times(1)).call();
         }
     }
 

@@ -3,7 +3,6 @@ package tech.ada.game.moviesbattle.controler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,13 +13,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -88,7 +85,6 @@ class GameControllerTest {
         @Test
         @DisplayName("when game an unexpected exception occurs, returns HTTP 500")
         void when_game_an_unexpected_exception_returns_internal_error() throws Exception {
-            final UUID gameId = UUID.randomUUID();
             when(startGame.call()).thenThrow(new RuntimeException("an super error"));
 
             final MockHttpServletRequestBuilder request = post(BASE_URL + "/start");

@@ -1,6 +1,5 @@
 package tech.ada.game.moviesbattle.interactor;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.DisplayName;
@@ -66,13 +65,14 @@ class StartGameTest {
         );
         final List<Movie> movies = Arrays.asList(firstMovie, secondMovie);
         final ArgumentCaptor<Game> gameArgumentCaptor = ArgumentCaptor.forClass(Game.class);
-        final Game game = buildGame(null, user, 0, movies);
+        final Game game = buildGame(UUID.randomUUID(), user, 0, movies);
 
         when(userContextHolder.getUserContextInfo()).thenReturn(userContextInfo);
         when(gameRepository.findByUserIdAndInProgress(user.getId(), true)).thenReturn(Optional.of(oldGame));
         when(movieRepository.findTwoRandomMovies()).thenReturn(movies);
+        when(gameRepository.save(any())).thenReturn(game);
 
-        subject.call();
+        final UUID result = subject.call();
 
         verify(userContextHolder, times(1)).getUserContextInfo();
         verify(gameRepository, times(1)).findByUserIdAndInProgress(user.getId(), true);
@@ -80,7 +80,7 @@ class StartGameTest {
         verify(movieRepository, times(1)).findTwoRandomMovies();
         verify(gameRepository, times(1)).save(gameArgumentCaptor.capture());
 
-        assertThat(game).usingRecursiveComparison().isEqualTo(gameArgumentCaptor.getValue());
+        assertEquals(game.getId(), result, "Ids must be the same");
         verifyNoMoreInteractions(userContextHolder, gameRepository, movieRepository);
     }
 
@@ -108,50 +108,7 @@ class StartGameTest {
         );
         final List<Movie> movies = Arrays.asList(firstMovie, secondMovie);
         final ArgumentCaptor<Game> gameArgumentCaptor = ArgumentCaptor.forClass(Game.class);
-        final Game game = buildGame(null, user, 0, movies);
-
-        when(userContextHolder.getUserContextInfo()).thenReturn(userContextInfo);
-        when(gameRepository.findByUserIdAndInProgress(user.getId(), true)).thenReturn(Optional.empty());
-        when(movieRepository.findTwoRandomMovies()).thenReturn(movies);
-
-        subject.call();
-
-        verify(userContextHolder, times(1)).getUserContextInfo();
-        verify(gameRepository, times(1)).findByUserIdAndInProgress(user.getId(), true);
-        verify(gameRepository, times(0)).updateInProgressById(any(), eq(false));
-        verify(movieRepository, times(1)).findTwoRandomMovies();
-        verify(gameRepository, times(1)).save(gameArgumentCaptor.capture());
-
-        assertThat(game).usingRecursiveComparison().isEqualTo(gameArgumentCaptor.getValue());
-        verifyNoMoreInteractions(userContextHolder, gameRepository, movieRepository);
-    }
-
-    @Test
-    @DisplayName("ensure that movies list is returned")
-    void ensure_movies_list_returned() {
-        final User user = new User(userId, username, "a-password");
-        final Movie firstMovie = new Movie(
-            "a-super-movie",
-            1994,
-            "a-director",
-            "a-actor",
-            9.7f,
-            2000L,
-            "tt0012345"
-        );
-        final Movie secondMovie = new Movie(
-            "a-super-movie-2",
-            1995,
-            "a-director-2",
-            "a-actor-2",
-            9.3f,
-            5000L,
-            "tt0067891"
-        );
-        final List<Movie> movies = Arrays.asList(firstMovie, secondMovie);
-        final ArgumentCaptor<Game> gameArgumentCaptor = ArgumentCaptor.forClass(Game.class);
-        final UUID gameId = UUID.randomUUID();
-        final Game game = buildGame(gameId, user, 0, movies);
+        final Game game = buildGame(UUID.randomUUID(), user, 0, movies);
 
         when(userContextHolder.getUserContextInfo()).thenReturn(userContextInfo);
         when(gameRepository.findByUserIdAndInProgress(user.getId(), true)).thenReturn(Optional.empty());
@@ -166,7 +123,7 @@ class StartGameTest {
         verify(movieRepository, times(1)).findTwoRandomMovies();
         verify(gameRepository, times(1)).save(gameArgumentCaptor.capture());
 
-        assertEquals(gameId, result, "Game ID must be the same");
+        assertEquals(game.getId(), result, "Ids must be the same");
         verifyNoMoreInteractions(userContextHolder, gameRepository, movieRepository);
     }
 

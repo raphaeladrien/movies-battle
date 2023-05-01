@@ -1,5 +1,7 @@
 package tech.ada.game.moviesbattle.interactor;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import tech.ada.game.moviesbattle.context.UserContextHolder;
@@ -12,6 +14,7 @@ import tech.ada.game.moviesbattle.repository.MovieRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class RetrieveGameOptions {
@@ -30,7 +33,7 @@ public class RetrieveGameOptions {
         this.userContextHolder = userContextHolder;
     }
 
-    public List<Movie> call(final UUID gameId) {
+    public List<MovieResponse> call(final UUID gameId) {
         final UUID userId = userContextHolder.getUserContextInfo().user().getId();
 
         final Optional<Game> optionalGame = gameRepository.findByIdAndUserIdAndInProgress(gameId, userId, true);
@@ -48,7 +51,7 @@ public class RetrieveGameOptions {
 
         if (optionalRound.isPresent()) {
             final Round round = optionalRound.get();
-            return List.of(round.getFirstMovie(), round.getSecondMovie());
+            return List.of(build(round.getFirstMovie()), build(round.getSecondMovie()));
         } else {
             final List<Movie> movies = retrieveNewOptions(game);
             final Round round = new Round(
@@ -60,8 +63,21 @@ public class RetrieveGameOptions {
             game.addRound(round);
             gameRepository.save(game);
 
-            return movies;
+            return build(movies);
         }
+    }
+
+    private List<MovieResponse> build(List<Movie> movies) {
+        return movies.stream().map(this::build).collect(Collectors.toList());
+    }
+
+    private MovieResponse build(Movie movie) {
+        return new MovieResponse(
+            movie.getId(),
+            movie.getTitle(),
+            movie.getYear(),
+            movie.getDirector()
+        );
     }
 
     private List<Movie> retrieveNewOptions(final Game game) {
@@ -77,6 +93,52 @@ public class RetrieveGameOptions {
             return retrieveNewOptions(game);
         } else {
             return movies;
+        }
+    }
+
+    public static class MovieResponse {
+        final UUID id;
+        final String title;
+        final int year;
+        final String directors;
+
+        public MovieResponse(UUID id, String title, int year, String directors) {
+            this.id = id;
+            this.title = title;
+            this.year = year;
+            this.directors = directors;
+        }
+
+        public UUID getId() {
+            return id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public int getYear() {
+            return year;
+        }
+
+        public String getDirectors() {
+            return directors;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+
+            if (o == null || getClass() != o.getClass()) return false;
+
+            MovieResponse that = (MovieResponse) o;
+
+            return new EqualsBuilder().append(id, that.id).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(id).toHashCode();
         }
     }
 

@@ -19,14 +19,16 @@ import tech.ada.game.moviesbattle.entity.Game;
 import tech.ada.game.moviesbattle.entity.Movie;
 import tech.ada.game.moviesbattle.entity.Round;
 import tech.ada.game.moviesbattle.entity.User;
-import tech.ada.game.moviesbattle.repository.GameRepository;
-import tech.ada.game.moviesbattle.repository.MovieRepository;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MaxNumberAttemptsException;
+import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MovieResponse;
+import tech.ada.game.moviesbattle.repository.GameRepository;
+import tech.ada.game.moviesbattle.repository.MovieRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 class RetrieveGameOptionsTest {
 
@@ -95,9 +97,9 @@ class RetrieveGameOptionsTest {
 
         when(gameRepository.findByIdAndUserIdAndInProgress(gameId, userId, true)).thenReturn(Optional.of(game));
 
-        final List<Movie> result = subject.call(gameId);
+        final List<MovieResponse> result = subject.call(gameId);
 
-        assertEquals(movies, result, "List of movies must be equals");
+        assertEquals(build(movies), result, "List of movies must be equals");
         verify(gameRepository, times(1)).findByIdAndUserIdAndInProgress(gameId, userId, true);
         verifyNoMoreInteractions(gameRepository);
         verifyNoInteractions(movieRepository);
@@ -118,9 +120,9 @@ class RetrieveGameOptionsTest {
         when(gameRepository.findByIdAndUserIdAndInProgress(gameId, userId, true)).thenReturn(Optional.of(game));
         when(movieRepository.findTwoRandomMovies()).thenReturn(randomMovies);
 
-        final List<Movie> result = subject.call(gameId);
+        final List<MovieResponse> result = subject.call(gameId);
 
-        assertEquals(randomMovies, result, "List of movies must be equals");
+        assertEquals(build(randomMovies), result, "List of movies must be equals");
         verify(gameRepository, times(1)).findByIdAndUserIdAndInProgress(gameId, userId, true);
         verify(gameRepository, times(1)).save(any());
         verify(movieRepository, times(1)).findTwoRandomMovies();
@@ -144,9 +146,9 @@ class RetrieveGameOptionsTest {
         when(gameRepository.findByIdAndUserIdAndInProgress(gameId, userId, true)).thenReturn(Optional.of(game));
         when(movieRepository.findTwoRandomMovies()).thenReturn(firstRandomMovie1).thenReturn(secondRandomMovies);
 
-        final List<Movie> result = subject.call(gameId);
+        final List<MovieResponse> result = subject.call(gameId);
 
-        assertEquals(secondRandomMovies, result, "List of movies must be equals");
+        assertEquals(build(secondRandomMovies), result, "List of movies must be equals");
         verify(gameRepository, times(1)).findByIdAndUserIdAndInProgress(gameId, userId, true);
         verify(gameRepository, times(1)).save(any());
         verify(movieRepository, times(2)).findTwoRandomMovies();
@@ -178,6 +180,19 @@ class RetrieveGameOptionsTest {
             RandomStringUtils.random(9),
             9.7f,
             2000L
+        );
+    }
+
+    private List<RetrieveGameOptions.MovieResponse> build(List<Movie> movies) {
+        return movies.stream().map(this::build).collect(Collectors.toList());
+    }
+
+    private RetrieveGameOptions.MovieResponse build(Movie movie) {
+        return new RetrieveGameOptions.MovieResponse(
+            movie.getId(),
+            movie.getTitle(),
+            movie.getYear(),
+            movie.getDirector()
         );
     }
 }

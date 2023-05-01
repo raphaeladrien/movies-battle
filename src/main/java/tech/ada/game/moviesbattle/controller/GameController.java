@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
+import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MovieResponse;
 import tech.ada.game.moviesbattle.interactor.StartGame;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,6 +25,9 @@ public class GameController {
 
     @Autowired
     private StartGame startGame;
+
+    @Autowired
+    private RetrieveGameOptions retrieveGameOptions;
 
     @PostMapping("/start")
     public ResponseEntity<StartResponse> start() {
@@ -35,7 +41,13 @@ public class GameController {
     }
 
     @GetMapping("/{id}/round")
-    public ResponseEntity round(@PathVariable("id") final UUID gameId) {
+    public ResponseEntity<RoundResponse> round(@PathVariable("id") final UUID gameId) {
+        final List<RetrieveGameOptions.MovieResponse> movies = retrieveGameOptions.call(gameId);
+        return ResponseEntity.ok(RoundResponse.build(gameId, movies));
+    }
+
+    @PostMapping("/{id}/bet")
+    public ResponseEntity bet(@PathVariable("id") final UUID gameId) {
         return ResponseEntity.ok("empty");
     }
 
@@ -65,6 +77,29 @@ public class GameController {
 
             response.add(linkTo(methodOn(GameController.class).start()).withSelfRel());
             response.add(linkTo(methodOn(GameController.class).round(id)).withRel("round"));
+            response.add(linkTo(methodOn(GameController.class).finish()).withRel("finish"));
+            response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
+
+            return response;
+        }
+    }
+
+    private static class RoundResponse extends RepresentationModel<RoundResponse> {
+        private final List<MovieResponse> movies;
+
+        private RoundResponse(List<MovieResponse> movies) {
+            this.movies = movies;
+        }
+
+        public List<MovieResponse> getMovies() {
+            return movies;
+        }
+
+        public static RoundResponse build(UUID id, List<MovieResponse> movies) {
+            final RoundResponse response = new RoundResponse(movies);
+
+            response.add(linkTo(methodOn(GameController.class).round(id)).withSelfRel());
+            response.add(linkTo(methodOn(GameController.class).bet(id)).withRel("bet"));
             response.add(linkTo(methodOn(GameController.class).finish()).withRel("finish"));
             response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
 

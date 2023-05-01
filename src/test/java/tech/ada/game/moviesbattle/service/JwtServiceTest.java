@@ -27,9 +27,8 @@ class JwtServiceTest {
     @Test
     @DisplayName("when a valid token is provided, should return the username")
     void when_valid_token_provided_should_return_username() {
-        final String validToken = "eyJhbGciOiJIUzI1NiJ9" +
-            ".eyJzdWIiOiJhLXN1cGVyLXVzZXIiLCJpYXQiOjE2ODI4NTQ5MjAsImV4cCI6MTY4Mjk0MTMyMH0" +
-            ".GWuXc2RgaTtYmFIa-Cfoom2pxY8YkpANdq6damqTO7E";
+        final UserDetails userDetails = new User("a-super-user", "password", new ArrayList<>());
+        final String validToken = subject.generateToken(userDetails);
         final String username = "a-super-user";
 
         final String extractedUsername = subject.extractUsername(validToken);

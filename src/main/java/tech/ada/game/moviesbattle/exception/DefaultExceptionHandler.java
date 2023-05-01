@@ -11,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
+import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
+import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -28,7 +29,7 @@ public class DefaultExceptionHandler {
         );
     }
 
-    @ExceptionHandler(RetrieveGameOptions.GameNotFoundException.class)
+    @ExceptionHandler(GameNotFoundException.class)
     public ResponseEntity<RestError> handleGameNotFoundException(Exception ex) {
         if (logger.isErrorEnabled())
             logger.error(ex.getMessage(), ex);
@@ -38,7 +39,7 @@ public class DefaultExceptionHandler {
         );
     }
 
-    @ExceptionHandler(RetrieveGameOptions.MaxNumberAttemptsException.class)
+    @ExceptionHandler(MaxNumberAttemptsException.class)
     public ResponseEntity<RestError> handleMaxNumberAttemptsException(Exception ex) {
         if (logger.isErrorEnabled())
             logger.error(ex.getMessage(), ex);

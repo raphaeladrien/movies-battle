@@ -26,9 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
-import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.GameNotFoundException;
-import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MaxNumberAttemptsException;
 import tech.ada.game.moviesbattle.interactor.StartGame;
+import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
+import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
 
 import java.util.List;
 import java.util.UUID;

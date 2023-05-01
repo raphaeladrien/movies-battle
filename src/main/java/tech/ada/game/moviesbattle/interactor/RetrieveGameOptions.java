@@ -8,6 +8,8 @@ import tech.ada.game.moviesbattle.context.UserContextHolder;
 import tech.ada.game.moviesbattle.entity.Game;
 import tech.ada.game.moviesbattle.entity.Movie;
 import tech.ada.game.moviesbattle.entity.Round;
+import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
+import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
 import tech.ada.game.moviesbattle.repository.GameRepository;
 import tech.ada.game.moviesbattle.repository.MovieRepository;
 
@@ -53,31 +55,22 @@ public class RetrieveGameOptions {
             final Round round = optionalRound.get();
             return List.of(build(round.getFirstMovie()), build(round.getSecondMovie()));
         } else {
-            final List<Movie> movies = retrieveNewOptions(game);
-            final Round round = new Round(
-                game,
-                movies.get(0),
-                movies.get(1)
-            );
-
-            game.addRound(round);
-            gameRepository.save(game);
-
-            return build(movies);
+            return getMovieResponses(game);
         }
     }
 
-    private List<MovieResponse> build(List<Movie> movies) {
-        return movies.stream().map(this::build).collect(Collectors.toList());
-    }
-
-    private MovieResponse build(Movie movie) {
-        return new MovieResponse(
-            movie.getId(),
-            movie.getTitle(),
-            movie.getYear(),
-            movie.getDirector()
+    private List<MovieResponse> getMovieResponses(Game game) {
+        final List<Movie> movies = retrieveNewOptions(game);
+        final Round round = new Round(
+            game,
+            movies.get(0),
+            movies.get(1)
         );
+
+        game.addRound(round);
+        gameRepository.save(game);
+
+        return build(movies);
     }
 
     private List<Movie> retrieveNewOptions(final Game game) {
@@ -94,6 +87,19 @@ public class RetrieveGameOptions {
         } else {
             return movies;
         }
+    }
+
+    private List<MovieResponse> build(List<Movie> movies) {
+        return movies.stream().map(this::build).collect(Collectors.toList());
+    }
+
+    private MovieResponse build(Movie movie) {
+        return new MovieResponse(
+            movie.getId(),
+            movie.getTitle(),
+            movie.getYear(),
+            movie.getDirector()
+        );
     }
 
     public static class MovieResponse {
@@ -139,18 +145,6 @@ public class RetrieveGameOptions {
         @Override
         public int hashCode() {
             return new HashCodeBuilder(17, 37).append(id).toHashCode();
-        }
-    }
-
-    public static class GameNotFoundException extends RuntimeException {
-        public GameNotFoundException(String message) {
-            super(message);
-        }
-    }
-
-    public static class MaxNumberAttemptsException extends RuntimeException {
-        public MaxNumberAttemptsException(String message) {
-            super(message);
         }
     }
 }

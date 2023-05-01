@@ -91,4 +91,8 @@ public class Game extends Auditable {
 
         rounds.add(round);
     }
+
+    public void incrementErrorCount() {
+        errors++;
+    }
 }

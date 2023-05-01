@@ -13,7 +13,7 @@ tags:
     description: APIs available to play the game
 
 paths:
-  /start:
+  /game/start:
     $include: paths/post-start.yaml
 
 components:

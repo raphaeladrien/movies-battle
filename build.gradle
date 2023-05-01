@@ -13,6 +13,7 @@ buildscript {
         h2Version = "2.1.214"
         flywayCoreVersion = "9.17.0"
         jwtVersion = "0.11.5"
+        hateoasVersion = "2.0.3"
     }
 
     repositories {
@@ -52,6 +53,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
+
+    implementation("org.springframework.hateoas:spring-hateoas:${hateoasVersion}")
 
     implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
     implementation("io.jsonwebtoken:jjwt-impl:${jwtVersion}")

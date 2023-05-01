@@ -150,12 +150,15 @@ class StartGameTest {
         );
         final List<Movie> movies = Arrays.asList(firstMovie, secondMovie);
         final ArgumentCaptor<Game> gameArgumentCaptor = ArgumentCaptor.forClass(Game.class);
+        final UUID gameId = UUID.randomUUID();
+        final Game game = buildGame(gameId, user, 0, movies);
 
         when(userContextHolder.getUserContextInfo()).thenReturn(userContextInfo);
         when(gameRepository.findByUserIdAndInProgress(user.getId(), true)).thenReturn(Optional.empty());
         when(movieRepository.findTwoRandomMovies()).thenReturn(movies);
+        when(gameRepository.save(any())).thenReturn(game);
 
-        final List<Movie> result = subject.call();
+        final UUID result = subject.call();
 
         verify(userContextHolder, times(1)).getUserContextInfo();
         verify(gameRepository, times(1)).findByUserIdAndInProgress(user.getId(), true);
@@ -163,7 +166,7 @@ class StartGameTest {
         verify(movieRepository, times(1)).findTwoRandomMovies();
         verify(gameRepository, times(1)).save(gameArgumentCaptor.capture());
 
-        assertEquals(movies, result, "Movies list must be the same returned from DB");
+        assertEquals(gameId, result, "Game ID must be the same");
         verifyNoMoreInteractions(userContextHolder, gameRepository, movieRepository);
     }
 

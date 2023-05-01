@@ -13,6 +13,7 @@ import tech.ada.game.moviesbattle.repository.MovieRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class StartGame {
@@ -28,7 +29,7 @@ public class StartGame {
     }
 
     @Transactional
-    public List<Movie> call() {
+    public UUID call() {
         final UserContextInfo userContextInfo = userContextHolder.getUserContextInfo();
         final User user = userContextInfo.user();
         final Optional<Game> otpGame = gameRepository.findByUserIdAndInProgress(user.getId(), true);
@@ -41,9 +42,9 @@ public class StartGame {
         final List<Movie> movies = movieRepository.findTwoRandomMovies();
         final Game game = buildGame(user, movies);
 
-        gameRepository.save(game);
+        final Game persistedGame = gameRepository.save(game);
 
-        return movies;
+        return persistedGame.getId();
     }
 
     private Game buildGame(User user, List<Movie> movies) {

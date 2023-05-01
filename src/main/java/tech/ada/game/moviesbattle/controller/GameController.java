@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.ada.game.moviesbattle.interactor.BetMovie;
 import tech.ada.game.moviesbattle.interactor.BetMovie.BetResponse;
+import tech.ada.game.moviesbattle.interactor.FinishGame;
+import tech.ada.game.moviesbattle.interactor.FinishGame.FinishResponse;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MovieResponse;
 import tech.ada.game.moviesbattle.interactor.StartGame;
@@ -34,6 +36,9 @@ public class GameController {
 
     @Autowired
     private BetMovie betMovie;
+
+    @Autowired
+    private FinishGame finishGame;
 
     @PostMapping("/start")
     public ResponseEntity<StartResponse> start() {
@@ -62,8 +67,9 @@ public class GameController {
     }
 
     @PostMapping("/finish")
-    public ResponseEntity finish() {
-        return ResponseEntity.ok("empty");
+    public ResponseEntity<StopResponse> finish() {
+        final FinishResponse response = finishGame.call();
+        return ResponseEntity.ok(StopResponse.buid(response.getGameId()));
     }
 
     @GetMapping("/ranking")
@@ -154,6 +160,28 @@ public class GameController {
             response.add(linkTo(methodOn(GameController.class).bet(id, new BetRequest())).withSelfRel());
             response.add(linkTo(methodOn(GameController.class).round(id)).withRel("round"));
             response.add(linkTo(methodOn(GameController.class).finish()).withRel("finish"));
+            response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
+
+            return response;
+        }
+    }
+
+    private static class StopResponse extends RepresentationModel<StopResponse> {
+        private final UUID gameId;
+
+        private StopResponse(UUID gameId) {
+            this.gameId = gameId;
+        }
+
+        public UUID getGameId() {
+            return gameId;
+        }
+
+        public static StopResponse buid(UUID gameId) {
+            final StopResponse response = new StopResponse(gameId);
+
+            response.add(linkTo(methodOn(GameController.class).finish()).withSelfRel());
+            response.add(linkTo(methodOn(GameController.class).start()).withRel("start"));
             response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
 
             return response;

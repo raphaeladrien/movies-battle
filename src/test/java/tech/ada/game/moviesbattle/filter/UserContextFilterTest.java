@@ -80,7 +80,7 @@ class UserContextFilterTest {
 
             verify(userContextHolder, times(1)).setUserContextInfo(userContextInfoCaptor.capture());
             verify(filterChain, times(1)).doFilter(request, response);
-            assertEquals(uuid, userContextInfoCaptor.getValue().userId(), "Context user id must be equals to user id");
+            assertEquals(uuid, userContextInfoCaptor.getValue().user().getId(), "Context user id must be equals to user id");
         }
 
         @Test

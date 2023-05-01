@@ -1,6 +1,6 @@
 package tech.ada.game.moviesbattle.context;
 
-import java.util.UUID;
+import tech.ada.game.moviesbattle.entity.User;
 
-public record UserContextInfo(UUID userId, String username) {
+public record UserContextInfo(User user) {
 }

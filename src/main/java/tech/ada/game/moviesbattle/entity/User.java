@@ -31,6 +31,13 @@ public class User implements UserDetails {
         super();
     }
 
+    public User(UUID id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = USER;
+    }
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;

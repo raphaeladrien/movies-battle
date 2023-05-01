@@ -50,7 +50,7 @@ public class UserContextFilter extends OncePerRequestFilter {
             );
 
             final UserContextInfo userContextInfo = new UserContextInfo(
-                user.getId(), user.getUsername()
+               user
             );
 
             userContextHolder.setUserContextInfo(userContextInfo);

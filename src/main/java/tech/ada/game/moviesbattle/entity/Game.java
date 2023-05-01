@@ -31,6 +31,14 @@ public class Game extends Auditable {
     @OneToMany(mappedBy = "game", orphanRemoval = true, cascade = ALL)
     private List<Round> rounds;
 
+    public Game(UUID id, User user, Integer errors, Boolean inProgress, List<Round> rounds) {
+        this.id = id;
+        this.user = user;
+        this.errors = errors;
+        this.inProgress = inProgress;
+        this.rounds = rounds;
+    }
+
     public Game(User user, Integer errors, Boolean inProgress, List<Round> rounds) {
         this.user = user;
         this.errors = errors;

@@ -6,6 +6,7 @@ create table if not exists Rounds(
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY(id),
+  foreign key (game_id) references Games(id),
   foreign key (first_movie) references Movies(id),
   foreign key (second_movie) references Movies(id)
 )

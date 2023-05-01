@@ -6,5 +6,5 @@ create table if not exists Games(
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY(id),
-  foreign key (id_user) references Users(id)
+  foreign key (user_id) references Users(id)
 )

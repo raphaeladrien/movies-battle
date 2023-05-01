@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -25,10 +26,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tech.ada.game.moviesbattle.controller.GameController.BetRequest;
+import tech.ada.game.moviesbattle.interactor.BetMovie;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
 import tech.ada.game.moviesbattle.interactor.StartGame;
 import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
+import tech.ada.game.moviesbattle.interactor.exception.OptionNotAvailableException;
 
 import java.util.List;
 import java.util.UUID;
@@ -50,6 +54,9 @@ class GameControllerTest {
 
     @MockBean
     private RetrieveGameOptions retrieveGameOptions;
+
+    @MockBean
+    private BetMovie betMovie;
 
     private MockMvc mockMvc;
 
@@ -214,6 +221,134 @@ class GameControllerTest {
                     "a-director-2"
                 )
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("when endpoint /:id/bet is called")
+    class WhenEndpointBetIsCalled {
+
+        @Test
+        @DisplayName("and the option provided was accepted, returns HTTP 200")
+        void and_option_provided_was_accepted_returns_ok() throws Exception {
+            final UUID gameId = UUID.randomUUID();
+            final UUID movieId = UUID.randomUUID();
+            final BetRequest payload = new BetRequest(movieId);
+
+            when(betMovie.call(gameId, movieId)).thenReturn(new BetMovie.BetResponse(
+                true, 2
+            ));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/" + gameId + "/bet")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsBytes(payload));
+
+            mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.betResponse.nailedIt", equalTo(true)))
+                .andExpect(jsonPath("$.betResponse.errors", equalTo(2)))
+                .andExpect(jsonPath("$._links.self.href",
+                    equalTo("http://localhost/movies-battle/game/" + gameId + "/bet"))
+                )
+                .andExpect(jsonPath("$._links.round.href",
+                    equalTo("http://localhost/movies-battle/game/"  + gameId + "/round"))
+                )
+                .andExpect(jsonPath("$._links.finish.href",
+                    equalTo("http://localhost/movies-battle/game/finish"))
+                )
+                .andExpect(jsonPath("$._links.ranking.href",
+                    equalTo("http://localhost/movies-battle/game/ranking"))
+                );
+
+            verify(betMovie, times(1)).call(gameId, movieId);
+        }
+
+        @Test
+        @DisplayName("and game wasn't found, returns HTTP 404")
+        void and_game_was_not_found_returns_not_found() throws Exception {
+            final UUID gameId = UUID.randomUUID();
+            final UUID movieId = UUID.randomUUID();
+            final BetRequest payload = new BetRequest(movieId);
+
+            when(betMovie.call(gameId, movieId)).thenThrow(new GameNotFoundException("not found"));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/" + gameId + "/bet")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsBytes(payload));
+
+            mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", equalTo("MB0001")))
+                .andExpect(jsonPath("$.message", equalTo("We couldn't find the game on our server. " +
+                    "please start a new game")));
+
+            verify(betMovie, times(1)).call(gameId, movieId);
+        }
+
+        @Test
+        @DisplayName("and max number of attempts was achieved, returns HTTP 422")
+        void max_number_attempts_was_achieved_returns_unprocessable_entity() throws Exception {
+            final UUID gameId = UUID.randomUUID();
+            final UUID movieId = UUID.randomUUID();
+            final BetRequest payload = new BetRequest(movieId);
+
+            when(betMovie.call(gameId, movieId)).thenThrow(new MaxNumberAttemptsException("max number attempts"));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/" + gameId + "/bet")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsBytes(payload));
+
+            mockMvc.perform(request)
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code", equalTo("MB0002")))
+                .andExpect(jsonPath("$.message", equalTo("Max number of attempts was achieved. " +
+                    "please start a new game")));
+
+            verify(betMovie, times(1)).call(gameId, movieId);
+        }
+
+        @Test
+        @DisplayName("and movie isn't available at this round, returns HTTP 422")
+        void movie_not_available_returns_unprocessable_entity() throws Exception {
+            final UUID gameId = UUID.randomUUID();
+            final UUID movieId = UUID.randomUUID();
+            final BetRequest payload = new BetRequest(movieId);
+
+            when(betMovie.call(gameId, movieId)).thenThrow(new OptionNotAvailableException("option not available"));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/" + gameId + "/bet")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsBytes(payload));
+
+            mockMvc.perform(request)
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code", equalTo("MB0004")))
+                .andExpect(jsonPath("$.message", equalTo("This movie isn't available as option in " +
+                    "this round. please update your information and try again")));
+
+            verify(betMovie, times(1)).call(gameId, movieId);
+        }
+
+        @Test
+        @DisplayName("and unexpected error occurred, returns HTTP 500")
+        void unexpected_error_occurred_returns_internal_error() throws Exception {
+            final UUID gameId = UUID.randomUUID();
+            final UUID movieId = UUID.randomUUID();
+            final BetRequest payload = new BetRequest(movieId);
+
+            when(betMovie.call(gameId, movieId)).thenThrow(new RuntimeException("option not available"));
+
+            final MockHttpServletRequestBuilder request = post(BASE_URL + "/" + gameId + "/bet")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsBytes(payload));
+
+            mockMvc.perform(request)
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code", equalTo("MB0500")))
+                .andExpect(jsonPath("$.message", equalTo("An internal server error occurred. " +
+                    "Please contact ada.tech support.")));
+
+            verify(betMovie, times(1)).call(gameId, movieId);
         }
     }
 

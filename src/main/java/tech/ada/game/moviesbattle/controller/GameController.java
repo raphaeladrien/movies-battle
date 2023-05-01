@@ -8,9 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.ada.game.moviesbattle.interactor.BetMovie;
+import tech.ada.game.moviesbattle.interactor.BetMovie.BetResponse;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MovieResponse;
 import tech.ada.game.moviesbattle.interactor.StartGame;
@@ -28,6 +31,9 @@ public class GameController {
 
     @Autowired
     private RetrieveGameOptions retrieveGameOptions;
+
+    @Autowired
+    private BetMovie betMovie;
 
     @PostMapping("/start")
     public ResponseEntity<StartResponse> start() {
@@ -47,8 +53,12 @@ public class GameController {
     }
 
     @PostMapping("/{id}/bet")
-    public ResponseEntity bet(@PathVariable("id") final UUID gameId) {
-        return ResponseEntity.ok("empty");
+    public ResponseEntity<BetMovieResponse> bet(
+        @PathVariable("id") final UUID gameId,
+        @RequestBody final BetRequest betRequest
+    ) {
+        final BetResponse response = betMovie.call(gameId, betRequest.movieId);
+        return ResponseEntity.ok(BetMovieResponse.build(response, gameId));
     }
 
     @PostMapping("/finish")
@@ -59,6 +69,26 @@ public class GameController {
     @GetMapping("/ranking")
     public ResponseEntity ranking() {
         return ResponseEntity.ok("empty");
+    }
+
+    public static class BetRequest {
+        private UUID movieId;
+
+        public BetRequest(UUID movieId) {
+            this.movieId = movieId;
+        }
+
+        public BetRequest() {
+            super();
+        }
+
+        public UUID getMovieId() {
+            return movieId;
+        }
+
+        public void setMovieId(UUID movieId) {
+            this.movieId = movieId;
+        }
     }
 
     private static class StartResponse extends RepresentationModel<StartResponse> {
@@ -99,11 +129,35 @@ public class GameController {
             final RoundResponse response = new RoundResponse(movies);
 
             response.add(linkTo(methodOn(GameController.class).round(id)).withSelfRel());
-            response.add(linkTo(methodOn(GameController.class).bet(id)).withRel("bet"));
+            response.add(linkTo(methodOn(GameController.class).bet(id, new BetRequest())).withRel("bet"));
             response.add(linkTo(methodOn(GameController.class).finish()).withRel("finish"));
             response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
 
             return response;
         }
     }
+
+    private static class BetMovieResponse extends RepresentationModel<BetMovieResponse> {
+        private final BetResponse betResponse;
+
+        private BetMovieResponse(BetResponse betResponse) {
+            this.betResponse = betResponse;
+        }
+
+        public BetResponse getBetResponse() {
+            return betResponse;
+        }
+
+        public static BetMovieResponse build(BetResponse betResponse, UUID id) {
+            final BetMovieResponse response = new BetMovieResponse(betResponse);
+
+            response.add(linkTo(methodOn(GameController.class).bet(id, new BetRequest())).withSelfRel());
+            response.add(linkTo(methodOn(GameController.class).round(id)).withRel("round"));
+            response.add(linkTo(methodOn(GameController.class).finish()).withRel("finish"));
+            response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
+
+            return response;
+        }
+    }
+
 }

@@ -1,0 +1,44 @@
+bet-response:
+  type: object
+  required:
+    - bet-result
+    - _links
+  properties:
+    bet-result:
+      type: object
+      properties:
+        nailedIt:
+          type: boolean
+          description: 'True if you got it right'
+          example: true
+        errors:
+          type: integer
+          description: 'Number of mistakes you have made. Keep in mind 3 is the max'
+          example: 3
+    _links:
+      type: object
+      properties:
+        self:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/game/:id/bet'
+        round:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/game/:id/round'
+        finish:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/finish'
+        ranking:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/ranking'

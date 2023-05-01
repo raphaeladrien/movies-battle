@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
+import tech.ada.game.moviesbattle.interactor.exception.OptionNotAvailableException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -49,7 +50,16 @@ public class DefaultExceptionHandler {
         );
     }
 
+    @ExceptionHandler(OptionNotAvailableException.class)
+    public ResponseEntity<RestError> handleOptionNotAvailableException(Exception ex) {
+        if (logger.isErrorEnabled())
+            logger.error(ex.getMessage(), ex);
 
+        return  ResponseEntity.status(UNPROCESSABLE_ENTITY).body(
+            new RestError("MB0004", "This movie isn't available as option in this round. please update " +
+                "your information and try again")
+        );
+    }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<RestError> handleBadCredentialsException(Exception ex) {

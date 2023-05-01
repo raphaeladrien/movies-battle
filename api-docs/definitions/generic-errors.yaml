@@ -6,7 +6,7 @@ unauthorized-error:
   properties:
     code:
       type: string
-      example: "MB0001"
+      example: "MB0401"
     message:
       type: string
       example: Unauthorized access. Please contact ada.tech support.
@@ -49,3 +49,16 @@ max-number-attempts-error:
     message:
       type: string
       example: Max number of attempts was achieved. please start a new game
+
+option-not-available-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0003"
+    message:
+      type: string
+      example: This movie isn't available as option in this round. please update your information and try again

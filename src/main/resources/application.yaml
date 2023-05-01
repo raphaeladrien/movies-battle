@@ -24,7 +24,7 @@ jwt:
 omdb:
   apikey: 21e071d6
   qtd:
-    movies: '3'
+    movies: '52'
   url: https://www.omdbapi.com/
   imdb:
     top:

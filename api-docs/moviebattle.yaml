@@ -17,10 +17,13 @@ paths:
     $include: paths/post-start.yaml
   /game/:id/round:
     $include: paths/get-round.yaml
+  /game/:id/bet:
+    $include: paths/bet-movie.yaml
 
 components:
   schemas:
     $include: definitions/generic-errors.yaml
     $include: definitions/start.yaml
     $include: definitions/round.yaml
+    $include: definitions/bet.yaml
 

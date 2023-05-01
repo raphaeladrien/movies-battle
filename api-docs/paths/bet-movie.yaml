@@ -1,14 +1,26 @@
-get:
+post:
   tags:
     - Game
-  summary: Retrieve options available for the round
+  summary: Make your bet and good luck
   responses:
     200:
-      description: 'Movies to bet'
+      description: 'Your bet result'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                movieId:
+                  type: string
+                  description: 'Unique and immutable movie identifier.'
+                  format: uuid
+                  example: 13e2ba02-e80c-11ed-a05b-0242ac120003
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/round-response'
+            $ref: '#/components/schemas/bet-response'
     401:
       description: 'Unauthorized Access'
       content:
@@ -26,7 +38,9 @@ get:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/max-number-attempts-error'
+            anyOf:
+              - $ref: '#/components/schemas/max-number-attempts-error'
+              - $ref: '#/components/schemas/option-not-available-error'
     500:
       description: 'Internal server error'
       content:

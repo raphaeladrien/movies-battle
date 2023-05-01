@@ -15,9 +15,12 @@ tags:
 paths:
   /game/start:
     $include: paths/post-start.yaml
+  /game/:id/round:
+    $include: paths/get-round.yaml
 
 components:
   schemas:
     $include: definitions/generic-errors.yaml
-    $include: definitions/movies.yaml
+    $include: definitions/start.yaml
+    $include: definitions/round.yaml
 

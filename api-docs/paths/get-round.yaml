@@ -1,19 +1,14 @@
-post:
+get:
   tags:
     - Game
-  summary: The game will be started and the first two options will be presented to you
+  summary: Retrieve options available for the round
   responses:
-    201:
-      description: 'User created successfully'
-      headers:
-        Location:
-          description: 'The location of the first game round'
-          schema:
-            type: string
+    200:
+      description: 'Movies to bet'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/start-response'
+            $ref: '#/components/schemas/round-response'
     401:
       description: 'Unauthorized Access'
       content:

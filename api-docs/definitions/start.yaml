@@ -1,4 +1,4 @@
-movies-response:
+start-response:
   type: object
   required:
     - id

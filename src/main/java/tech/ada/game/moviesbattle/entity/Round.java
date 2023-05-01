@@ -1,5 +1,6 @@
 package tech.ada.game.moviesbattle.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +31,9 @@ public class Round extends Auditable {
     @JoinColumn(name = "second_movie")
     private Movie secondMovie;
 
+    @Column(name = "is_answered")
+    private boolean isAnswered;
+
     public Round() {
         super();
     }
@@ -38,6 +42,7 @@ public class Round extends Auditable {
         this.game = game;
         this.firstMovie = firstMovie;
         this.secondMovie = secondMovie;
+        this.isAnswered = false;
     }
 
     public UUID getId() {
@@ -70,5 +75,13 @@ public class Round extends Auditable {
 
     public void setSecondMovie(Movie secondMovie) {
         this.secondMovie = secondMovie;
+    }
+
+    public boolean isAnswered() {
+        return isAnswered;
+    }
+
+    public void setAnswered(boolean answered) {
+        isAnswered = answered;
     }
 }

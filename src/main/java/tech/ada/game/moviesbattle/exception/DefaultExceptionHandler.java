@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -42,7 +43,7 @@ public class DefaultExceptionHandler {
         if (logger.isErrorEnabled())
             logger.error(ex.getMessage(), ex);
 
-        return  ResponseEntity.status(NOT_FOUND).body(
+        return  ResponseEntity.status(UNPROCESSABLE_ENTITY).body(
             new RestError("MB0002", "Max number of attempts was achieved. please start a new game")
         );
     }

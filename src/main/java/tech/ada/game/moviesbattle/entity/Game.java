@@ -82,6 +82,10 @@ public class Game extends Auditable {
         this.inProgress = inProgress;
     }
 
+    public List<Round> getRounds() {
+        return rounds;
+    }
+
     public void addRound(Round round) {
         if (rounds == null) rounds = new ArrayList<>(10);
 

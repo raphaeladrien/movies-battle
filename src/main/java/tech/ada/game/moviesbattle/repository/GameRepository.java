@@ -13,6 +13,10 @@ import java.util.UUID;
 public interface GameRepository extends JpaRepository<Game, UUID> {
     Optional<Game> findByUserIdAndInProgress(UUID userId, boolean inProgress);
 
+    @Query("SELECT g FROM Game g LEFT JOIN FETCH g.rounds WHERE g.id = :gameId and g.user.id = :userId and " +
+        "g.inProgress = :inProgress")
+    Optional<Game> findByIdAndUserIdAndInProgress(UUID gameId, UUID userId, boolean inProgress);
+
     @Modifying
     @Query("UPDATE Game g SET g.inProgress = :inProgress WHERE g.id = :id")
     int updateInProgressById(UUID id, boolean inProgress);

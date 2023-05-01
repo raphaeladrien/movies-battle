@@ -29,6 +29,16 @@ public class Movie {
        super();
     }
 
+    public Movie(UUID id, String title, Integer year, String director, String actors, Float imdbRating, Long imdbVotes) {
+        this.id = id;
+        this.title = title;
+        this.year = year;
+        this.director = director;
+        this.actors = actors;
+        this.imdbRating = imdbRating;
+        this.imdbVotes = imdbVotes;
+    }
+
     public Movie(
         String title, Integer year, String director, String actors, Float imdbRating, Long imdbVotes, String imdbId
     ) {

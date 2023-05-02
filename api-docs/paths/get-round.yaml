@@ -2,6 +2,10 @@ get:
   tags:
     - Game
   summary: Retrieve options available for the round
+  security:
+    - jwt: []
+  produces:
+    - application/json
   responses:
     200:
       description: 'Movies to bet'

@@ -2,6 +2,10 @@ get:
   tags:
     - Game
   summary: Retrieve overall game ranking
+  security:
+    - jwt: []
+  produces:
+    - application/json
   responses:
     200:
       description: 'Overall game ranking'

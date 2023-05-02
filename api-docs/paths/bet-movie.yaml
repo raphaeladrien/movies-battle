@@ -2,6 +2,8 @@ post:
   tags:
     - Game
   summary: Make your bet and good luck
+  security:
+    - jwt: []
   produces:
     - application/json
   parameters:

@@ -1,10 +1,10 @@
-betResponse:
+bet-response:
   type: object
   required:
     - bet-result
     - _links
   properties:
-    bet-result:
+    betResponse:
       type: object
       properties:
         nailedIt:

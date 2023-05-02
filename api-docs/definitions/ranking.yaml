@@ -1,0 +1,57 @@
+ranking-response:
+  type: object
+  required:
+    - ranking
+    - _links
+  properties:
+    movies:
+      type: array
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/raking-first-element'
+          - $ref: '#/components/schemas/raking-second-element'
+    _links:
+      type: object
+      properties:
+        self:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/game/ranking'
+        start:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/game/start'
+        finish:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/finish'
+
+raking-first-element:
+  type: object
+  properties:
+    username:
+      type: string
+      description: 'Username'
+      example: 'daenerys.targaryen'
+    score:
+      type: number
+      description: 'Year the movie was released'
+      example: 10000
+
+raking-second-element:
+  type: object
+  properties:
+    username:
+      type: string
+      description: 'Username'
+      example: 'rhaenyra.targaryen'
+    score:
+      type: number
+      description: 'Year the movie was released'
+      example: 4000

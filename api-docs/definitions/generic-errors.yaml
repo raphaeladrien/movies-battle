@@ -62,3 +62,16 @@ option-not-available-error:
     message:
       type: string
       example: This movie isn't available as option in this round. please update your information and try again
+
+no-ranking-available-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0004"
+    message:
+      type: string
+      example: The ranking isn't available. please try again later

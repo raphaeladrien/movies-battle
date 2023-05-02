@@ -15,10 +15,12 @@ tags:
 paths:
   /game/start:
     $include: paths/post-start.yaml
-  /game/:id/round:
-    $include: paths/get-round.yaml
   /game/:id/bet:
     $include: paths/bet-movie.yaml
+  /game/:id/round:
+    $include: paths/get-round.yaml
+  /game/ranking:
+    $include: paths/get-ranking.yaml
 
 components:
   schemas:
@@ -26,4 +28,5 @@ components:
     $include: definitions/start.yaml
     $include: definitions/round.yaml
     $include: definitions/bet.yaml
+    $include: definitions/ranking.yaml
 

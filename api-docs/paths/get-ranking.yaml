@@ -1,0 +1,29 @@
+get:
+  tags:
+    - Game
+  summary: Retrieve overall game ranking
+  responses:
+    200:
+      description: 'Overall game ranking'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ranking-response'
+    401:
+      description: 'Unauthorized Access'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/unauthorized-error'
+    404:
+      description: 'Ranking not found'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/no-ranking-available-error'
+    500:
+      description: 'Internal server error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/internal-server-error'

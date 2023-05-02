@@ -17,6 +17,8 @@ paths:
     $include: paths/post-start.yaml
   /game/:id/bet:
     $include: paths/bet-movie.yaml
+  /game/finish:
+    $include: paths/post-finish.yaml
   /game/:id/round:
     $include: paths/get-round.yaml
   /game/ranking:
@@ -29,4 +31,5 @@ components:
     $include: definitions/round.yaml
     $include: definitions/bet.yaml
     $include: definitions/ranking.yaml
+    $include: definitions/finish.yaml
 

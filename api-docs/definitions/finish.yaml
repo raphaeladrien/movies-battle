@@ -1,10 +1,10 @@
-start-response:
+finish-response:
   type: object
   required:
-    - id
+    - gameId
     - _links
   properties:
-    id:
+    gameId:
       type: string
       description: 'Unique and immutable game identifier.'
       format: uuid
@@ -17,19 +17,13 @@ start-response:
           properties:
             href:
               type: string
-              example: 'http://localhost:8080/movie-battle/start'
-        round:
-          type: object
-          properties:
-            href:
-              type: string
-              example: 'http://localhost:8080/movie-battle/game/:id/round'
-        finish:
-          type: object
-          properties:
-            href:
-              type: string
               example: 'http://localhost:8080/movie-battle/finish'
+        start:
+          type: object
+          properties:
+            href:
+              type: string
+              example: 'http://localhost:8080/movie-battle/start'
         ranking:
           type: object
           properties:

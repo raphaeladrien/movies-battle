@@ -331,7 +331,7 @@ class GameControllerTest {
 
             mockMvc.perform(request)
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code", equalTo("MB0004")))
+                .andExpect(jsonPath("$.code", equalTo("MB0003")))
                 .andExpect(jsonPath("$.message", equalTo("This movie isn't available as option in " +
                     "this round. please update your information and try again")));
 
@@ -467,7 +467,7 @@ class GameControllerTest {
 
             mockMvc.perform(request)
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code", equalTo("MB0005")))
+                .andExpect(jsonPath("$.code", equalTo("MB0004")))
                 .andExpect(jsonPath("$.message", equalTo("The ranking isn't available. please " +
                     "try again later")));
 

@@ -1,6 +1,5 @@
 package tech.ada.game.moviesbattle.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -29,20 +28,25 @@ import java.util.UUID;
 @RequestMapping("/movies-battle/game")
 public class GameController {
 
-    @Autowired
-    private StartGame startGame;
+    private final StartGame startGame;
+    private final RetrieveGameOptions retrieveGameOptions;
+    private final BetMovie betMovie;
+    private final FinishGame finishGame;
+    private final RetrieveRanking retrieveRankingInteractor;
 
-    @Autowired
-    private RetrieveGameOptions retrieveGameOptions;
-
-    @Autowired
-    private BetMovie betMovie;
-
-    @Autowired
-    private FinishGame finishGame;
-
-    @Autowired
-    private RetrieveRanking retrieveRankingInteractor;
+    public GameController(
+        StartGame startGame,
+        RetrieveGameOptions retrieveGameOptions,
+        BetMovie betMovie,
+        FinishGame finishGame,
+        RetrieveRanking retrieveRankingInteractor
+    ) {
+        this.startGame = startGame;
+        this.retrieveGameOptions = retrieveGameOptions;
+        this.betMovie = betMovie;
+        this.finishGame = finishGame;
+        this.retrieveRankingInteractor = retrieveRankingInteractor;
+    }
 
     @PostMapping("/start")
     public ResponseEntity<StartResponse> start() {

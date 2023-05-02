@@ -1,6 +1,5 @@
 package tech.ada.game.moviesbattle.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,17 +8,20 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.ada.game.moviesbattle.interactor.AuthenticateUser;
 import static tech.ada.game.moviesbattle.interactor.AuthenticateUser.AuthenticationRequest;
 import static tech.ada.game.moviesbattle.interactor.AuthenticateUser.AuthenticationResponse;
-import static tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserRequest;
 import tech.ada.game.moviesbattle.interactor.RegisterUser;
+import static tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserRequest;
 
 @RestController
 @RequestMapping("/movies-battle/id")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticateUser authenticateUser;
-    @Autowired
-    private RegisterUser registerUser;
+    private final AuthenticateUser authenticateUser;
+    private final RegisterUser registerUser;
+
+    public AuthenticationController(AuthenticateUser authenticateUser, RegisterUser registerUser) {
+        this.authenticateUser = authenticateUser;
+        this.registerUser = registerUser;
+    }
 
     @PostMapping("/signing")
     public ResponseEntity<AuthenticationResponse> signing(

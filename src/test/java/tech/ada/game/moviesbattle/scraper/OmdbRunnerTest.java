@@ -1,7 +1,11 @@
 package tech.ada.game.moviesbattle.scraper;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import tech.ada.game.moviesbattle.interactor.RegisterUser;
+import tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserRequest;
 import static tech.ada.game.moviesbattle.scraper.OmdbRunner.InvalidMovieNumberException;
+import static tech.ada.game.moviesbattle.scraper.OmdbRunner.InvalidUserConfigurationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
@@ -23,10 +27,12 @@ class OmdbRunnerTest {
 
     private final OmdbScraper omdbScraper = mock(OmdbScraper.class);
     private final MovieRepository movieRepository = mock(MovieRepository.class);
+    private final RegisterUser registerUser = mock(RegisterUser.class);
     private final String imdbMovieOne = "tt0111161";
     private final String imdbMovieTwo = "tt0068646";
     private final String imdbMovieThree = "tt0012345";
     private final String imdbMovieFour = "tt00207034";
+    private final String users = "ned.stark#123456;jon.snow#123456;sansa.stark#123456";
     private final List<String> imdbIds = Arrays.asList(imdbMovieOne, imdbMovieTwo, imdbMovieThree, imdbMovieFour);
 
     @Test
@@ -40,7 +46,7 @@ class OmdbRunnerTest {
         movies.add(movieTwo);
         movies.add(movieThree);
 
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, 3, imdbIds);
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, 3, imdbIds, users);
 
         when(omdbScraper.run("tt0111161")).thenReturn(CompletableFuture.completedFuture(null));
         when(omdbScraper.run("tt0068646")).thenReturn(
@@ -68,7 +74,7 @@ class OmdbRunnerTest {
     @Test
     @DisplayName("when number of movies is zero, throws InvalidMovieNumberException")
     void when_number_of_movies_is_zero_throws_exception() throws Exception {
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, 0, imdbIds);
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, 0, imdbIds, users);
 
         assertThrows(InvalidMovieNumberException.class, subject::run);
 
@@ -78,11 +84,59 @@ class OmdbRunnerTest {
     @Test
     @DisplayName("when number of movies is less than zero, throws InvalidMovieNumberException")
     void when_number_of_movies_less_than_zero_throws_exception() throws Exception {
-        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, -1, imdbIds);
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, -1, imdbIds, users);
 
         assertThrows(InvalidMovieNumberException.class, subject::run);
 
         verifyNoInteractions(omdbScraper, movieRepository);
+    }
+
+    @Test
+    @DisplayName("when list of users are provided, generates users")
+    void when_users_are_provided_generate_user() throws Exception {
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, 3, imdbIds, users);
+
+        when(omdbScraper.run(any(String.class))).thenReturn(CompletableFuture.completedFuture(null));
+
+        subject.run();
+
+        verify(registerUser, times(3)).call(any(RegisterUserRequest.class));
+    }
+
+    @Test
+    @DisplayName("when list of users are provided is empty, does nothing")
+    void when_users_are_provided_is_empty_does_nothing() throws Exception {
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, 3, imdbIds, "");
+
+        when(omdbScraper.run(any(String.class))).thenReturn(CompletableFuture.completedFuture(null));
+
+        subject.run();
+
+        verify(registerUser, times(0)).call(any(RegisterUserRequest.class));
+    }
+
+    @Test
+    @DisplayName("when only user is provided, generates user")
+    void when_only_user_is_provided_generates_user() throws Exception {
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, 3, imdbIds, "jon.snow#12345");
+
+        when(omdbScraper.run(any(String.class))).thenReturn(CompletableFuture.completedFuture(null));
+
+        subject.run();
+
+        verify(registerUser, times(1)).call(any(RegisterUserRequest.class));
+    }
+
+    @Test
+    @DisplayName("when user is provided in wrong standard, throws InvalidUserConfigurationException")
+    void when_user_is_provided_wrong_standard_throws_InvalidUserConfigurationException() throws Exception {
+        final OmdbRunner subject = new OmdbRunner(omdbScraper, movieRepository, registerUser, 3, imdbIds, "jon.snow-12345");
+
+        when(omdbScraper.run(any(String.class))).thenReturn(CompletableFuture.completedFuture(null));
+
+        assertThrows(InvalidUserConfigurationException.class, subject::run);
+
+        verify(registerUser, times(0)).call(any(RegisterUserRequest.class));
     }
 
     private Movie buildMovie(final String imdbId) {

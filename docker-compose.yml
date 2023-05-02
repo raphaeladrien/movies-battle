@@ -18,6 +18,10 @@ services:
       - "8080"
     ports:
       - "8080:8080"
+    networks:
+      - adanetwork
+    depends_on:
+      - doc
 
   doc:
     build:
@@ -28,3 +32,9 @@ services:
       - "3333"
     ports:
       - "3333:3333"
+    networks:
+      - adanetwork
+
+networks:
+  adanetwork:
+    driver: bridge

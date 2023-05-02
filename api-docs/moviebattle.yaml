@@ -6,7 +6,7 @@ info:
   version: 0.0.1
 
 servers:
-  - url: http://localhost:8080/movie-battle/
+  - url: http://game:8080/movies-battle/
 
 tags:
   - name: Game
@@ -32,4 +32,8 @@ components:
     $include: definitions/bet.yaml
     $include: definitions/ranking.yaml
     $include: definitions/finish.yaml
-
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

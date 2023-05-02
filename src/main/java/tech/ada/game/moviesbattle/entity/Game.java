@@ -95,4 +95,13 @@ public class Game extends Auditable {
     public void incrementErrorCount() {
         errors++;
     }
+
+    public double score() {
+        if (rounds.isEmpty())
+            return 0;
+
+        final long totalRounds = rounds.stream().filter(Round::isAnswered).count();
+        final long numberSuccess = totalRounds - errors;
+        return totalRounds * ((numberSuccess * 100)/(double)totalRounds);
+    }
 }

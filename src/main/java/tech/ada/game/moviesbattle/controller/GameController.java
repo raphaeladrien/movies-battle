@@ -18,6 +18,7 @@ import tech.ada.game.moviesbattle.interactor.FinishGame;
 import tech.ada.game.moviesbattle.interactor.FinishGame.FinishResponse;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions.MovieResponse;
+import tech.ada.game.moviesbattle.interactor.RetrieveRanking;
 import tech.ada.game.moviesbattle.interactor.StartGame;
 
 import java.net.URI;
@@ -39,6 +40,9 @@ public class GameController {
 
     @Autowired
     private FinishGame finishGame;
+
+    @Autowired
+    private RetrieveRanking retrieveRankingInteractor;
 
     @PostMapping("/start")
     public ResponseEntity<StartResponse> start() {
@@ -73,8 +77,9 @@ public class GameController {
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity ranking() {
-        return ResponseEntity.ok("empty");
+    public ResponseEntity<RankingResponse> ranking() {
+        final List<RetrieveRanking.Ranking> response = retrieveRankingInteractor.call();
+        return ResponseEntity.ok(RankingResponse.buid(response));
     }
 
     public static class BetRequest {
@@ -183,6 +188,28 @@ public class GameController {
             response.add(linkTo(methodOn(GameController.class).finish()).withSelfRel());
             response.add(linkTo(methodOn(GameController.class).start()).withRel("start"));
             response.add(linkTo(methodOn(GameController.class).ranking()).withRel("ranking"));
+
+            return response;
+        }
+    }
+
+    private static class RankingResponse extends RepresentationModel<RankingResponse> {
+        private final List<RetrieveRanking.Ranking> ranking;
+
+        private RankingResponse(List<RetrieveRanking.Ranking> ranking) {
+            this.ranking = ranking;
+        }
+
+        public List<RetrieveRanking.Ranking> getRanking() {
+            return ranking;
+        }
+
+        public static RankingResponse buid(List<RetrieveRanking.Ranking> ranking) {
+            final RankingResponse response = new RankingResponse(ranking);
+
+            response.add(linkTo(methodOn(GameController.class).ranking()).withSelfRel());
+            response.add(linkTo(methodOn(GameController.class).start()).withRel("start"));
+            response.add(linkTo(methodOn(GameController.class).finish()).withRel("finish"));
 
             return response;
         }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.ada.game.moviesbattle.entity.Game;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,4 +21,7 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
     @Modifying
     @Query("UPDATE Game g SET g.inProgress = :inProgress WHERE g.id = :id")
     int updateInProgressById(UUID id, boolean inProgress);
+
+    @Query("SELECT g FROM Game g LEFT JOIN FETCH g.rounds r LEFT JOIN FETCH g.user")
+    Optional<List<Game>> findAllWithRoundsAndUser();
 }

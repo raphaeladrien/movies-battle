@@ -1,4 +1,4 @@
-bet-response:
+betResponse:
   type: object
   required:
     - bet-result

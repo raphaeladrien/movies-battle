@@ -2,21 +2,23 @@ post:
   tags:
     - Game
   summary: Make your bet and good luck
+  produces:
+    - application/json
+  parameters:
+    - in: body
+      schema:
+        type: object
+        required:
+          - id
+        properties:
+          movieId:
+            type: string
+            description: 'Unique and immutable movie identifier.'
+            format: uuid
+            example: c9ca860d-1328-462f-bfc8-d630b122281d
   responses:
     200:
       description: 'Your bet result'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                movieId:
-                  type: string
-                  description: 'Unique and immutable movie identifier.'
-                  format: uuid
-                  example: 13e2ba02-e80c-11ed-a05b-0242ac120003
       content:
         application/json:
           schema:

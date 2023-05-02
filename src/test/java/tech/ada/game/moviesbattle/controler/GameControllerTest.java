@@ -30,9 +30,11 @@ import tech.ada.game.moviesbattle.controller.GameController.BetRequest;
 import tech.ada.game.moviesbattle.interactor.BetMovie;
 import tech.ada.game.moviesbattle.interactor.FinishGame;
 import tech.ada.game.moviesbattle.interactor.RetrieveGameOptions;
+import tech.ada.game.moviesbattle.interactor.RetrieveRanking;
 import tech.ada.game.moviesbattle.interactor.StartGame;
 import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
+import tech.ada.game.moviesbattle.interactor.exception.NoRankingAvailableException;
 import tech.ada.game.moviesbattle.interactor.exception.OptionNotAvailableException;
 
 import java.util.List;
@@ -61,6 +63,9 @@ class GameControllerTest {
 
     @MockBean
     private FinishGame finishGame;
+
+    @MockBean
+    private RetrieveRanking retrieveRanking;
 
     private MockMvc mockMvc;
 
@@ -415,6 +420,74 @@ class GameControllerTest {
                     "Please contact ada.tech support.")));
 
             verify(finishGame, times(1)).call();
+        }
+    }
+
+    @Nested
+    @DisplayName("when endpoint /ranking is called")
+    class WhenEndpointRankingIsCalled {
+
+        @Test
+        @DisplayName("and the ranking is available, returns 200")
+        void and_ranking_is_available_returns_ok() throws Exception {
+            final List<RetrieveRanking.Ranking> ranking = List.of(
+                new RetrieveRanking.Ranking("user-1", 4000),
+                new RetrieveRanking.Ranking("user-2", 2000)
+            );
+
+            when(retrieveRanking.call()).thenReturn(ranking);
+
+            final MockHttpServletRequestBuilder request = get(BASE_URL + "/ranking");
+
+            mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ranking[0].username", equalTo("user-1")))
+                .andExpect(jsonPath("$.ranking[0].score", equalTo(4000d)))
+                .andExpect(jsonPath("$.ranking[1].username", equalTo("user-2")))
+                .andExpect(jsonPath("$.ranking[1].score", equalTo(2000d)))
+                .andExpect(jsonPath("$._links.self.href",
+                    equalTo("http://localhost/movies-battle/game/ranking"))
+                )
+                .andExpect(jsonPath("$._links.start.href",
+                    equalTo("http://localhost/movies-battle/game/start"))
+                )
+                .andExpect(jsonPath("$._links.finish.href",
+                    equalTo("http://localhost/movies-battle/game/finish"))
+                );
+
+            verify(retrieveRanking, times(1)).call();
+        }
+
+        @Test
+        @DisplayName("and the ranking isn't available, returns 404")
+        void and_ranking_is_not_available_returns_not_found() throws Exception {
+            when(retrieveRanking.call()).thenThrow(new NoRankingAvailableException("no ranking"));
+
+            final MockHttpServletRequestBuilder request = get(BASE_URL + "/ranking");
+
+            mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", equalTo("MB0005")))
+                .andExpect(jsonPath("$.message", equalTo("The ranking isn't available. please " +
+                    "try again later")));
+
+            verify(retrieveRanking, times(1)).call();
+        }
+
+        @Test
+        @DisplayName("and an unexpected error occurred, returns HTTP 500")
+        void and_unexpected_error_occurred_returns_internal_error() throws Exception {
+            when(retrieveRanking.call()).thenThrow(new RuntimeException("an error"));
+
+            final MockHttpServletRequestBuilder request = get(BASE_URL + "/ranking");
+
+            mockMvc.perform(request)
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code", equalTo("MB0500")))
+                .andExpect(jsonPath("$.message", equalTo("An internal server error occurred. " +
+                    "Please contact ada.tech support.")));
+
+            verify(retrieveRanking, times(1)).call();
         }
     }
 

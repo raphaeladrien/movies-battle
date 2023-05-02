@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
+import tech.ada.game.moviesbattle.interactor.exception.NoRankingAvailableException;
 import tech.ada.game.moviesbattle.interactor.exception.OptionNotAvailableException;
 
 @ControllerAdvice
@@ -58,6 +59,16 @@ public class DefaultExceptionHandler {
         return  ResponseEntity.status(UNPROCESSABLE_ENTITY).body(
             new RestError("MB0004", "This movie isn't available as option in this round. please update " +
                 "your information and try again")
+        );
+    }
+
+    @ExceptionHandler(NoRankingAvailableException.class)
+    public ResponseEntity<RestError> handleNoRankingAvailableException(Exception ex) {
+        if (logger.isErrorEnabled())
+            logger.error(ex.getMessage(), ex);
+
+        return  ResponseEntity.status(NOT_FOUND).body(
+            new RestError("MB0005", "The ranking isn't available. please try again later")
         );
     }
 

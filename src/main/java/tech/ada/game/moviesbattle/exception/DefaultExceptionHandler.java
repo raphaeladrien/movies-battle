@@ -86,5 +86,5 @@ public class DefaultExceptionHandler {
         return new RestError(status.toString(), message);
     }
 
-    private record RestError(String code, String message) { }
+    protected record RestError(String code, String message) { }
 }

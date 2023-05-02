@@ -57,7 +57,7 @@ public class DefaultExceptionHandler {
             logger.error(ex.getMessage(), ex);
 
         return  ResponseEntity.status(UNPROCESSABLE_ENTITY).body(
-            new RestError("MB0004", "This movie isn't available as option in this round. please update " +
+            new RestError("MB0003", "This movie isn't available as option in this round. please update " +
                 "your information and try again")
         );
     }
@@ -68,7 +68,7 @@ public class DefaultExceptionHandler {
             logger.error(ex.getMessage(), ex);
 
         return  ResponseEntity.status(NOT_FOUND).body(
-            new RestError("MB0005", "The ranking isn't available. please try again later")
+            new RestError("MB0004", "The ranking isn't available. please try again later")
         );
     }
 

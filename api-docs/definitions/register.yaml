@@ -1,0 +1,9 @@
+register-response:
+  type: object
+  required:
+    - message
+  properties:
+    message:
+      type: string
+      description: 'Result'
+      example: 'User was created.'

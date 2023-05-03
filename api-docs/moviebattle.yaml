@@ -26,7 +26,9 @@ paths:
   /game/ranking:
     $include: paths/get-ranking.yaml
   /id/signing:
-    $include: paths/id-signing.yaml
+    $include: paths/post-signing.yaml
+  /id/register:
+    $include: paths/post-register.yaml
 
 components:
   schemas:
@@ -37,6 +39,7 @@ components:
     $include: definitions/ranking.yaml
     $include: definitions/finish.yaml
     $include: definitions/signing.yaml
+    $include: definitions/register.yaml
   securitySchemes:
     jwt:
       type: http

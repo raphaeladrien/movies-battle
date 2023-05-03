@@ -75,3 +75,16 @@ no-ranking-available-error:
     message:
       type: string
       example: The ranking isn't available. please try again later
+
+user-already-exists-error:
+  required:
+    - code
+    - message
+  type: object
+  properties:
+    code:
+      type: string
+      example: "MB0005"
+    message:
+      type: string
+      example:   User already exists.

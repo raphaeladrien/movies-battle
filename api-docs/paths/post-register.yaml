@@ -15,24 +15,24 @@ post:
           username:
             type: string
             description: 'Your username'
-            example: 'ned.stark'
+            example: 'theon.greyjoy'
           password:
             type: string
             description: 'Your password'
             example: '123456'
   responses:
     200:
-      description: 'Game finished'
+      description: 'User created'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/signing-response'
-    401:
-      description: 'Unauthorized Access'
+            $ref: '#/components/schemas/register-response'
+    422:
+      description: 'User already exists'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/unauthorized-error'
+            $ref: '#/components/schemas/user-already-exists-error'
     500:
       description: 'Internal server error'
       content:

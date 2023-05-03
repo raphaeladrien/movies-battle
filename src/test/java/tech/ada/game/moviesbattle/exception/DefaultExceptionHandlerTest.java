@@ -12,6 +12,7 @@ import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
 import tech.ada.game.moviesbattle.interactor.exception.NoRankingAvailableException;
 import tech.ada.game.moviesbattle.interactor.exception.OptionNotAvailableException;
+import tech.ada.game.moviesbattle.interactor.exception.UserExistsException;
 
 class DefaultExceptionHandlerTest {
 
@@ -75,6 +76,16 @@ class DefaultExceptionHandlerTest {
             .handleBadCredentialsException(ex);
 
         assertEquals(UNAUTHORIZED, responseEntity.getStatusCode(), "Status code must be the same");
+    }
+
+    @Test
+    void testHandleUserExistsException() {
+        Exception ex = new UserExistsException("Test exception");
+
+        final ResponseEntity<DefaultExceptionHandler.RestError> responseEntity = defaultExceptionHandler
+            .handleUserExistsException(ex);
+
+        assertEquals(UNPROCESSABLE_ENTITY, responseEntity.getStatusCode(), "Status code must be the same");
     }
 }
 

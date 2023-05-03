@@ -55,6 +55,22 @@ public class RegisterUser {
         public String getPassword() {
             return password;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+
+            if (o == null || getClass() != o.getClass()) return false;
+
+            RegisterUserRequest that = (RegisterUserRequest) o;
+
+            return new EqualsBuilder().append(username, that.username).append(password, that.password).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(username).append(password).toHashCode();
+        }
     }
 
     public static class RegisterUserResponse {

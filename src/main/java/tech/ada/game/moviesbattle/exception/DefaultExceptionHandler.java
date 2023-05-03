@@ -14,6 +14,7 @@ import tech.ada.game.moviesbattle.interactor.exception.GameNotFoundException;
 import tech.ada.game.moviesbattle.interactor.exception.MaxNumberAttemptsException;
 import tech.ada.game.moviesbattle.interactor.exception.NoRankingAvailableException;
 import tech.ada.game.moviesbattle.interactor.exception.OptionNotAvailableException;
+import tech.ada.game.moviesbattle.interactor.exception.UserExistsException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -78,6 +79,16 @@ public class DefaultExceptionHandler {
 
         return  ResponseEntity.status(UNAUTHORIZED).body(
             new RestError("MB0401", "Unauthorized access. Please contact ada.tech support")
+        );
+    }
+
+    @ExceptionHandler(UserExistsException.class)
+    public ResponseEntity<RestError> handleUserExistsException(Exception ex) {
+        if (logger.isErrorEnabled())
+            logger.error(ex.getMessage(), ex);
+
+        return  ResponseEntity.status(UNPROCESSABLE_ENTITY).body(
+            new RestError("MB0005", "User already exists.")
         );
     }
 

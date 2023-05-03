@@ -1,0 +1,9 @@
+signing-response:
+  type: object
+  required:
+    - access_token
+  properties:
+    access_token:
+      type: string
+      description: 'A valid JWT token'
+      example: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZWQuc3RhcmsiLCJpYXQiOjE2ODMxMTM3NjcsImV4cCI6MTY4MzIwMDE2N30.rGnJKHbZsHSiyHWncBclt5lIo19IsWqLPuPyxL7d3SE'

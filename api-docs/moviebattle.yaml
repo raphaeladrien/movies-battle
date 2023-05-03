@@ -11,6 +11,8 @@ servers:
 tags:
   - name: Game
     description: APIs available to play the game
+  - name: ID
+    description: APIs to Auth and create users
 
 paths:
   /game/start:
@@ -23,6 +25,8 @@ paths:
     $include: paths/get-round.yaml
   /game/ranking:
     $include: paths/get-ranking.yaml
+  /id/signing:
+    $include: paths/id-signing.yaml
 
 components:
   schemas:
@@ -32,6 +36,7 @@ components:
     $include: definitions/bet.yaml
     $include: definitions/ranking.yaml
     $include: definitions/finish.yaml
+    $include: definitions/signing.yaml
   securitySchemes:
     jwt:
       type: http

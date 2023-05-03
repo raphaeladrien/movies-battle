@@ -18,7 +18,7 @@ Além disto, a documentação da API também estará disponível no endereço ht
 
 A base de dados será carregada com 3 users mencionados abaixo e com 52 filmes do IMDB durante o processo de inicialização.
 * Novos users podem ser adicionados através do endpoint `movies-battle/id/register`
-* A quantidade de 52 filmes foi definida dado que a quantidade de combinações possíveis seria bastante elevada. (`52!/2!(52-2)!=1.226573e+132`)
+* A quantidade de 52 filmes foi definida uma vez que a quantidade de combinações possíveis seria bastante elevada. (`52!/2!(52-2)!=1.226573e+132`)
 
 ### Segurança
 

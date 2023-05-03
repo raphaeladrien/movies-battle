@@ -1,0 +1,41 @@
+post:
+  tags:
+    - ID
+  summary: Endpoint used to obtain the JWT access token
+  produces:
+    - application/json
+  parameters:
+    - in: body
+      schema:
+        type: object
+        required:
+          - username
+          - password
+        properties:
+          username:
+            type: string
+            description: 'Your username'
+            example: 'ned.stark'
+          password:
+            type: string
+            description: 'Your password'
+            example: '123456'
+  responses:
+    200:
+      description: 'Game finished'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/signing-response'
+    401:
+      description: 'Unauthorized Access'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/unauthorized-error'
+    500:
+      description: 'Internal server error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/internal-server-error'

@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import tech.ada.game.moviesbattle.entity.User;
+import tech.ada.game.moviesbattle.interactor.exception.UserExistsException;
 import tech.ada.game.moviesbattle.repository.UserRepository;
 import static tech.ada.game.moviesbattle.entity.Role.USER;
 
@@ -19,9 +20,14 @@ public class RegisterUser {
     }
 
     public boolean call(final RegisterUserRequest registerUserRequest) {
+        final String username = registerUserRequest.username;
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new UserExistsException("User " + username + " already exists in DB");
+        }
+
         final String encodedPassword = passwordEncoder.encode(registerUserRequest.password);
         final User user = new User(
-            registerUserRequest.username, encodedPassword, USER
+            username, encodedPassword, USER
         );
         userRepository.save(user);
         return true;
@@ -40,12 +46,12 @@ public class RegisterUser {
             super();
         }
 
-        public void setUsername(String username) {
-            this.username = username;
+        public String getUsername() {
+            return username;
         }
 
-        public void setPassword(String password) {
-            this.password = password;
+        public String getPassword() {
+            return password;
         }
     }
 }

@@ -10,6 +10,7 @@ import static tech.ada.game.moviesbattle.interactor.AuthenticateUser.Authenticat
 import static tech.ada.game.moviesbattle.interactor.AuthenticateUser.AuthenticationResponse;
 import tech.ada.game.moviesbattle.interactor.RegisterUser;
 import static tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserRequest;
+import static tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserResponse;
 
 @RestController
 @RequestMapping("/movies-battle/id")
@@ -31,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Boolean> register(
+    public ResponseEntity<RegisterUserResponse> register(
         @RequestBody final RegisterUserRequest registerUserRequest
     ) {
         return ResponseEntity.ok(registerUser.call(registerUserRequest));

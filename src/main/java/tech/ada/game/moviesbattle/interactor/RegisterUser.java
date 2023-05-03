@@ -1,5 +1,7 @@
 package tech.ada.game.moviesbattle.interactor;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ public class RegisterUser {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean call(final RegisterUserRequest registerUserRequest) {
+    public RegisterUserResponse call(final RegisterUserRequest registerUserRequest) {
         final String username = registerUserRequest.username;
         if (userRepository.findByUsername(username).isPresent()) {
             throw new UserExistsException("User " + username + " already exists in DB");
@@ -30,7 +32,7 @@ public class RegisterUser {
             username, encodedPassword, USER
         );
         userRepository.save(user);
-        return true;
+        return new RegisterUserResponse("User was created");
     }
 
     public static class RegisterUserRequest {
@@ -52,6 +54,34 @@ public class RegisterUser {
 
         public String getPassword() {
             return password;
+        }
+    }
+
+    public static class RegisterUserResponse {
+        private final String message;
+
+        public RegisterUserResponse(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+
+            if (o == null || getClass() != o.getClass()) return false;
+
+            RegisterUserResponse that = (RegisterUserResponse) o;
+
+            return new EqualsBuilder().append(message, that.message).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(message).toHashCode();
         }
     }
 }

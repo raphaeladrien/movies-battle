@@ -1,7 +1,7 @@
 package tech.ada.game.moviesbattle.interactor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
@@ -14,6 +14,7 @@ import tech.ada.game.moviesbattle.entity.User;
 import tech.ada.game.moviesbattle.interactor.exception.UserExistsException;
 import tech.ada.game.moviesbattle.repository.UserRepository;
 import tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserRequest;
+import tech.ada.game.moviesbattle.interactor.RegisterUser.RegisterUserResponse;
 
 import java.util.Optional;
 
@@ -40,14 +41,15 @@ class RegisterUserTest {
     void when_user_does_not_exists_create_user() {
         when(userRepository.findByUsername(request.getUsername())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.getPassword())).thenReturn("a-encoded-password");
+        final RegisterUserResponse expectedResult = new RegisterUserResponse("User was created");
 
-        final boolean result = subject.call(request);
+        final RegisterUserResponse result = subject.call(request);
 
         verify(userRepository, times(1)).findByUsername(request.getUsername());
         verify(passwordEncoder, times(1)).encode(request.getPassword());
         verify(userRepository, times(1)).save(new User(
             request.getUsername(), "a-encoded-password", USER
         ));
-        assertTrue(result, "Result must be true");
+        assertEquals(expectedResult, result,"Result must be true");
     }
 }

@@ -1,7 +1,7 @@
 ## Sobre
 
 Este repositório contém o desafio técnico feito para o processo seletivo para a empresa [ada.tech](https://ada.tech/). 
-Para mais informações sobre o desafio veja aqui.
+Para mais informações sobre o desafio [veja aqui](https://github.com/raphaeladrien/movies-battle/blob/master/api-docs/prova.pdf).
 
 ## Desenvolvido com
 

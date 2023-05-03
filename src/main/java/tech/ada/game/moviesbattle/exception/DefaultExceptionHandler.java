@@ -78,12 +78,8 @@ public class DefaultExceptionHandler {
             logger.error(ex.getMessage(), ex);
 
         return  ResponseEntity.status(UNAUTHORIZED).body(
-            buildError(UNAUTHORIZED, "Authentication failed. Please check your credentials and try again.")
+            new RestError("MB0401", "Unauthorized access. Please contact ada.tech support")
         );
-    }
-
-    private RestError buildError(HttpStatus status, String message) {
-        return new RestError(status.toString(), message);
     }
 
     protected record RestError(String code, String message) { }
